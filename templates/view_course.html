@@ -1,0 +1,84 @@
+{% extends "./index.html" %} 
+{% load static %}  
+{% block content %} 
+<!-- Course Header Section --> 
+<div class="container text-center my-5">     
+    <h1 class="display-4 fw-bold mb-4">Explore Our Courses</h1>     
+    <p class="fs-4 mb-4">Enhance your skills and knowledge with our expertly designed courses to help you excel in your career.</p> 
+</div>  
+
+<!-- Course Overview Section --> 
+<div class="container">     
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 g-4">         
+        <!-- Course Card 1 -->         
+        <div class="col">             
+            <div class="card shadow-lg border-light rounded-3 hover-effect h-100">                 
+                <img src="{% static 'images/python.png' %}" class="card-img-top rounded-3" alt="Course 1">                 
+                <div class="card-body d-flex flex-column">                     
+                    <h5 class="card-title fw-bold">Introduction to Python</h5>                     
+                    <p class="card-text flex-grow-1">Master Python fundamentals, one of the most versatile and widely used programming languages today.</p>                     
+                    <a href="https://drive.google.com/file/d/1_qrIARxbLWenADOUp0e1M1RFegSEbORX/view" class="btn btn-primary btn-lg mt-auto">Start Learning</a>                 
+                </div>             
+            </div>         
+        </div>          
+        
+        <!-- Course Card 2 -->         
+        <div class="col">             
+            <div class="card shadow-lg border-light rounded-3 hover-effect h-100">                 
+                <img src="{% static 'images/programmerUsinghtmlcssjs.jpg' %}" class="card-img-top rounded-3" alt="Course 2">                 
+                <div class="card-body d-flex flex-column">                     
+                    <h5 class="card-title fw-bold">Web Development with HTML & CSS</h5>                     
+                    <p class="card-text flex-grow-1">Learn HTML & CSS, the building blocks for modern web design, and start building beautiful websites.</p>                     
+                    <a href="https://drive.google.com/file/d/1WYAlLluE4POQgvHAXLOG5FPF6Zo01zsC/view?usp=drive_link" class="btn btn-primary btn-lg mt-auto">Start Learning</a>                 
+                </div>             
+            </div>         
+        </div>          
+        
+        <!-- Course Card 3 -->         
+        <div class="col">             
+            <div class="card shadow-lg border-light rounded-3 hover-effect h-100">                 
+                <img src="{% static 'images/js-infojpg.jpg' %}" class="card-img-top rounded-3" alt="Course 3">                 
+                <div class="card-body d-flex flex-column">                     
+                    <h5 class="card-title fw-bold">JavaScript for Beginners</h5>                     
+                    <p class="card-text flex-grow-1">Dive into JavaScript, the essential language for dynamic and interactive web applications.</p>                     
+                    <a href="https://drive.google.com/file/d/1-Jsk8zTeJCwDzMXTFOpzowy5TKRr-QfX/view?usp=drive_link" class="btn btn-primary btn-lg mt-auto">Start Learning</a>                 
+                </div>             
+            </div>         
+        </div>     
+    </div> 
+</div>   
+{% endblock content %}  
+
+<!-- Custom CSS for hover effects --> 
+<style>     
+    /* Hover effect for cards */     
+    .hover-effect:hover {         
+        transform: translateY(-10px);         
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);         
+        transition: all 0.3s ease-in-out;     
+    }      
+    
+    /* Button Hover Effect */     
+    .btn:hover {         
+        background-color: #0056b3;         
+        color: white;         
+        transition: background-color 0.3s ease;     
+    }      
+    
+    /* Add transition to image on hover */     
+    .card-img-top:hover {         
+        transform: scale(1.05);         
+        transition: transform 0.3s ease-in-out;     
+    } 
+    
+    /* Ensure equal height for cards */
+    .card { 
+        display: flex; 
+        flex-direction: column;
+    }
+    
+    .card-body { 
+        display: flex; 
+        flex-direction: column; 
+    }
+</style>

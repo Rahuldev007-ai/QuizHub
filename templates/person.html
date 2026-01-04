@@ -1,0 +1,104 @@
+{% extends "index.html" %}
+{% block content %}
+
+<style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        h1 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .friend-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-container input {
+            border-radius: 50px;
+            padding: 10px 20px;
+        }
+
+        .search-container button {
+            border-radius: 50px;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+        }
+
+        .send-request-btn {
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .send-request-btn.sent {
+            background-color: #6c757d;
+            color: #fff;
+            pointer-events: none;
+        }
+
+        .user-count {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+
+    <div class="container mt-5">
+        <h1 class="text-center">Send Friend Request</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                
+                <div class="search-container mb-4">
+                    <input type="text" id="friendName" class="form-control" placeholder="Search Friend's Name">
+                    <button id="sendRequest" class="btn btn-primary">Search</button>
+                </div>
+
+                <div id="userList" class="row">
+                    {% for user in all_users %}
+                    <div class="col-md-3 mb-3">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <img src="user.profile_img.url|default:'static/images/user.png" class="rounded-circle mb-2" alt="">
+                                <h5 class="card-title">{{user.username}}</h5>
+                                <button class="btn btn-success send-request-btn">Send Request</button><br>
+                                <a href = '' class="">View Profile</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.send-request-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                this.classList.add('sent');
+                this.textContent = 'Request Sent';
+            });
+        });
+    </script>
+    {% endblock content %}

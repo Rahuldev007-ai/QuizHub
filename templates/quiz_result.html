@@ -1,0 +1,145 @@
+{% extends "./index.html" %}
+
+{% block content %}
+
+<div class="container my-5">
+    <!-- Quiz Title -->
+    <h1 class="display-4 text-center my-4 text-primary text-truncate">
+        {{ quiz.title }}
+        <span class="badge bg-secondary fs-5 ">({{ quiz.question_set.count }} Questions)</span>
+    </h1>
+    <p class="fs-4 text-center text-muted text-truncate">{{ quiz.description }}</p>
+
+    <!-- Timer and Info Section -->
+    <div class="container bg-light py-3 rounded shadow-sm">
+        <div class="row text-center">
+            <div class="col-md-6 mb-2">
+                <span class="fs-5 text-secondary">
+                    <i class="bi bi-calendar-event text-primary"></i> <strong>Date:</strong> {{ quiz.create_at }}
+                </span>
+            </div>
+            <div class="col-md-6 mb-2">
+                <span class="fs-5 text-secondary">
+                    <i class="bi bi-clock text-danger"></i> <strong>Time Taken:</strong> <span class="text-danger fw-bold">{{ time_taken }}</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Section -->
+    <div class="text-center mt-4 bg-primary text-white py-4 rounded shadow-sm">
+        <h3 class="fw-bold">Your Result</h3>
+        <p class="fs-5">
+            <strong>Score:</strong> <span class="badge bg-success fs-4">{{ score }}</span> / <span class="fs-4">{{ total }}</span>
+        </p>
+        <p class="fs-5">
+            <strong>Incorrect Answers:</strong> <span class="badge bg-danger fs-4">{{ incorrect }}</span>
+        </p>
+        <div class="mt-3">
+            <a href="{% url 'retry_quiz' quiz.id %}" class="btn btn-success btn-lg me-2">Retry</a>
+            <a href="{% url 'all_quiz' %}" class="btn btn-outline-light btn-lg me-2">Back to Quizzes</a>
+        </div>
+    </div>
+
+    <!-- User Answers Section -->
+     <div class="mt-5 bg-light py-4 px-3 rounded shadow">
+        <h4 class="text-primary fw-bold mb-4">Your Answers:</h4>
+        <div class="list-group">
+            {% for question_id, data in user_answers.items %}
+            <div class="list-group-item d-flex justify-content-between align-items-center p-4">
+                <div class="w-75">
+                    <p class="fw-bold mb-1 text-dark">{{ data.question_text|truncatechars:60 }}</p>
+                    <p class="mb-0">
+                        Your Answer:
+                        {% if data.user_choice %}
+                            <strong class="text-{% if data.is_correct%}success{%else%}danger{% endif %}">{{ data.user_choice.text|truncatechars:50 }}</strong>
+                            {% if data.is_correct %}
+                            <span class="badge bg-success ms-2">Correct</span>
+                            {% else %}
+                            <!-- <span class="badge bg-danger ms-2">Incorrect</span> -->
+                            {% endif %}
+                        {% else %}
+                            <em class="text-danger">No Answer</em>
+                        {% endif %}
+                    </p>
+                    {% if not data.is_correct %}
+                    <p class="mb-0 text-muted">
+                        Correct Answer: <strong class="text-success">{{ data.correct_choice.text|truncatechars:50 }}</strong>
+                    </p>
+                    {% endif %}
+                </div>
+                <i class="bi {% if data.is_correct %}bi-check-circle-fill text-success{% else %}bi-x-circle-fill text-danger{% endif %} fs-3"></i>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Incorrect Answers Section -->
+
+</div>
+
+<style>
+    /* General Styling */
+    body {
+        background: #f8f9fa;
+    }
+
+    .badge {
+        font-size: 1.2rem;
+        padding: 0.6rem 1.2rem;
+    }
+
+    .list-group-item {
+        border: none;
+        background: #fff;
+        margin-bottom: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .list-group-item:hover {
+        background: #f8f8f8;
+    }
+
+    .fw-bold {
+        color: #333;
+    }
+
+    .container {
+        max-width: 1100px;
+    }
+
+    .list-group-item i {
+        font-size: 1.8rem;
+    }
+
+    /* Badge Styling */
+    .badge.bg-success {
+        background-color: #28a745 !important;
+    }
+
+    .badge.bg-danger {
+        background-color: #dc3545 !important;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 0.8rem 2rem;
+        border-radius: 30px;
+        font-size: 1.2rem;
+    }
+
+    /* Responsive Styling */
+    @media (max-width: 768px) {
+        .container {
+            padding: 1rem;
+        }
+
+        .list-group-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+{% endblock content %}

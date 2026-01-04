@@ -1,0 +1,87 @@
+{% extends "./index.html" %}
+
+{% block content %}
+
+<div class="container my-5">
+    <h1 class="display-4 text-center my-4 text-primary">{{ quiz.title }} - ({{ quiz.question_set.count }})</h1>
+    <p class="fs-4 text-center text-muted">{{ quiz.description }}</p>
+
+    <!-- Timer and Info -->
+    <div class="container bg-light py-3 rounded shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="fs-5 text-secondary"><i class="bi bi-calendar-event"></i> {{ quiz.create_at }}</span>
+            <span class="fs-5 text-secondary"><i class="bi bi-clock"></i> Time Remaining: <span id="timer" class="text-danger fw-bold">10:00</span></span>
+        </div>
+    </div>
+
+    <form id="quizForm" method="POST" action="{% url 'quiz' quiz.id %}">
+        {% csrf_token %}
+        <div class="questions my-4">
+            <!-- Loop for questions -->
+            {% for question in quiz.question_set.all %}
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white fw-bold">
+                    Question {{ forloop.counter }}
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ question.text }}</p>
+                    {% for choice in question.choice_set.all %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="question_{{ question.id }}" id="choice_{{ choice.id }}" value="{{ choice.id }}">
+                        <label class="form-check-label" for="choice_{{ choice.id }}">{{ choice.text }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-danger text-center fs-5">No questions are available for this quiz.</p>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-4">
+            <button id="submitBtn" type="submit" class="btn btn-lg btn-success shadow">
+                <i class="bi bi-check-circle"></i> Submit the Quiz
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- JavaScript for Timer and Submit Handling -->
+<script>
+    // Timer Variables
+    let totalTime = 10 * 60; // 10 minutes in seconds
+    const timerDisplay = document.getElementById('timer');
+    const form = document.getElementById('quizForm');
+    const submitBtn = document.getElementById('submitBtn');
+    let timer;
+
+    // Function to start the timer
+    function startTimer() {
+        timer = setInterval(function () {
+            let minutes = Math.floor(totalTime / 60);
+            let seconds = totalTime % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            // End the quiz when time is up
+            if (totalTime <= 0) {
+                clearInterval(timer);
+                alert("Time is up! Submitting the quiz...");
+                form.submit();  // Automatically submit the form
+            }
+
+            totalTime--;
+        }, 1000);
+    }
+
+    // Prevent multiple submissions and update the button state
+    form.addEventListener('submit', function () {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="bi bi-arrow-repeat"></i> Submitting...';
+        clearInterval(timer); // Stop the timer when submitted
+    });
+
+    // Start the timer when the page loads
+    window.onload = startTimer;
+</script>
+
+{% endblock content %}

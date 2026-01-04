@@ -1,0 +1,140 @@
+{% extends "./index.html" %}
+{% block content %}
+
+<div class="container my-5">
+    <h1 class="display-4 text-center fw-bold text-primary">Leaderboard</h1>
+
+    <!-- Table Header -->
+    <div class="leaderboard-header">
+        <div class="col-name">NAME</div>
+        <div class="col-score">SCORE</div>
+        <div class="col-quiz">CODING QUIZ</div>
+        <div class="col-time">TIME</div>
+        <div class="col-rank">RANK</div>
+    </div>
+
+    <!-- Leaderboard Rows -->
+    <div class="leaderboard">
+        {% for user_score in leaderboard_user %}
+        <div class="leaderboard-row" style="background: linear-gradient(135deg, {{ user_score.color1 }}, {{ user_score.color2 }});">
+            
+            <!-- Profile Image & Name -->
+            <div class="col-name">
+                <a href="{% url 'profile' user_score.user.username %}" class="profile-link">
+                    <img src="{{ user_score.user.profile.profile_img.url|default:'static/images/user.png' }}" alt="Profile">
+                </a>
+                <div>
+                    <a href="{% url 'profile' user_score.user.username %}" class="name-link">
+                        <h5 class="name-text">@{{ user_score.user.username }}</h5>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Score -->
+            <div class="col-score">
+                <p class="score-text">{{ user_score.score }}</p>
+            </div>
+
+            <!-- Coding Quiz Title -->
+            <div class="col-quiz">
+                <p class="quiz-text ">{{ user_score.quiz.title|truncatewords:10 }}</p>
+            </div>
+
+            <!-- Time Taken -->
+            <div class="col-time">
+                <p class="time-text">{{ user_score.time_taken }}</p>
+            </div>
+
+            <!-- Rank -->
+            <div class="col-rank">
+                <strong class="rank-text">{{ forloop.counter|stringformat:"03d" }}</strong>
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<style type="text/css">
+    /* Leaderboard Header */
+.leaderboard-header {
+    display: flex;
+    justify-content: space-between;
+    background: black;
+    color: white;
+    font-weight: bold;
+    padding: 15px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+/* Leaderboard Row */
+.leaderboard-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    margin: 10px 0;
+    border-radius: 20px;
+    color: white;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 3px solid black;
+}
+
+.leaderboard-row:hover {
+    transform: scale(1.03);
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Column Styles */
+.col-name, .col-score, .col-quiz, .col-time, .col-rank {
+    flex: 1;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Profile Image */
+.col-name {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.col-name img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    margin-right: 15px;
+    border: 4px solid black;
+}
+
+/* Text Styling */
+.name-text, .score-text, .quiz-text, .time-text, .rank-text {
+    color: black;  /* Ensure text is visible */
+}
+.quiz-text
+{
+    text-truncate:10;
+}
+
+/* Rank Styling */
+.col-rank strong {
+    font-size: 22px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 10px 20px;
+    border-radius: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .leaderboard-header, .leaderboard-row {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .col-name {
+        justify-content: center;
+    }
+}
+
+</style>
+{% endblock %}

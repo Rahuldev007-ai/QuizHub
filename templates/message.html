@@ -1,0 +1,30 @@
+{% extends "./index.html" %}
+
+{% block content %}
+    <h1 class="display-4 text-center my-5">Messages From @{{ user_profile.user.username }}</h1>
+
+    <main>
+        <div class="container col-md-8 col-sm-12">
+            <article>
+                <!-- Loop through messages and display them -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <sub>From</sub>
+                        <a href="{% url 'profile' user_profile.user.username %}" title="Click to see profile">@{{ user_profile.user.username }}</a>
+                        <br><br>
+                        <sub>Received At</sub>
+                        <p>{{ message.created_at|date:"Y-m-d" }}</p>
+                        <sub>Subject</sub>
+                        <p>{{ message.subject }}</p>
+                        <sub>Message</sub>
+                        <p>{{ message.message }}</p>
+                        <hr>
+                    {% endfor %}
+                {% else %}
+                    <p>No messages found.</p>
+                {% endif %}
+            </article>
+        </div>
+    </main>
+
+{% endblock content %}

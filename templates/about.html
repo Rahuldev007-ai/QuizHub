@@ -1,0 +1,103 @@
+{% extends "index.html" %}
+{% block content %}
+<div class="container my-5">
+    <!-- Page Header -->
+    <h1 class="display-4 text-center text-dark my-5">About Us</h1>
+
+    <!-- About Section -->
+    <main>
+        <div class="container col-md-8 col-sm-12">
+            <!-- App Description -->
+            <section class="app-description text-center mb-5">
+                <h2 class="text-dark fw-bold">Welcome to <span class="text-success">QuizHub</span></h2>
+                <p class="fs-5 mt-3">
+                    QuizHub is an exciting web app that brings you the latest and hottest quiz topics in the world of
+                    technology. Sign up now to challenge your knowledge, learn new things, and have fun with our
+                    engaging quizzes.
+                </p>
+            </section>
+
+            <!-- How It Works -->
+            <section class="how-it-works">
+                <h2 class="text-center text-success fw-bold mb-4">How It Works</h2>
+                <div class="steps">
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <div class="card shadow-sm h-100 text-center hover-card">
+                                <div class="card-body">
+                                    <h3 class="card-title text-secondary"><i class="fa fa-user-plus me-2"></i>Sign Up</h3>
+                                    <p class="card-text">
+                                        Create your personalized account to unlock exciting quizzes and track your progress.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card shadow-sm h-100 text-center hover-card">
+                                <div class="card-body">
+                                    <h3 class="card-title text-secondary"><i class="fa fa-list-alt me-2"></i>Choose Quizzes</h3>
+                                    <p class="card-text">
+                                        Explore a variety of trending quiz topics in the world of technology.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card shadow-sm h-100 text-center hover-card">
+                                <div class="card-body">
+                                    <h3 class="card-title text-secondary"><i class="fa fa-clock me-2"></i>Timed Quizzes</h3>
+                                    <p class="card-text">
+                                        Participate in time-limited quizzes and answer challenging questions.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card shadow-sm h-100 text-center hover-card">
+                                <div class="card-body">
+                                    <h3 class="card-title text-secondary"><i class="fa fa-trophy me-2"></i>Compete & Rank</h3>
+                                    <p class="card-text">
+                                        Track your progress and compete with other tech enthusiasts on our leaderboard.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<!-- Custom Styles -->
+<style>
+    .hover-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .hover-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    h2 span {
+        font-weight: bold;
+        text-decoration: underline;
+    }
+    h3 i{
+        color: ;
+    }
+</style>
+
+<!-- JavaScript for Interactive Effects -->
+<script>
+    document.querySelectorAll('.hover-card').forEach((card) => {
+        card.addEventListener('mouseover', () => {
+            card.classList.add('shadow-lg');
+        });
+        card.addEventListener('mouseout', () => {
+            card.classList.remove('shadow-lg');
+        });
+    });
+</script>
+{% endblock content %}

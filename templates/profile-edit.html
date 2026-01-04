@@ -1,0 +1,157 @@
+{% extends "index.html" %}
+{% block content %}
+
+<h1 class="display-5 text-center my-5">Edit Profile</h1>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0 text-center">Edit Your Profile</h5>
+        </div>
+        <div class="card-body p-4">
+          <form action="" method="POST" enctype="multipart/form-data" id="editProfileForm" novalidate>
+            {% csrf_token %}
+
+            <!-- Profile Picture -->
+            <div class="mb-3 text-center">
+              <label class="form-label d-block">
+                <i class="fas fa-image"></i> Profile Image
+              </label>
+
+
+            {% if user_profile.profile_img and user_profile.profile_img.url %}
+                <img id="imagePreview" src="{{ user_profile.profile_img.url }}" 
+                     class="img-thumbnail rounded-circle shadow-sm mb-2 object-fit-cover"  
+                     style="width: 150px; height: 150px; object-fit: cover;">
+            {% else %}
+                <img id="imagePreview" src="/static/images/user.png" 
+                     class="img-thumbnail rounded-circle shadow-sm mb-2 object-fit-cover"  
+                     style="width: 150px; height: 150px; object-fit: cover;">
+            {% endif %}
+              
+              <div class="d-flex justify-content-between align-items-center">
+                <input type="file" name="image" class="form-control me-2" id="exampleInputImage" accept="image/jpeg, image/png" style="width: 75%;">
+                <button type="button" class="btn btn-danger btn-sm" id="removeImage">Remove</button>
+              </div>
+
+              <input type="hidden" name="remove_image" id="removeImageInput" value="0">
+              <small class="text-danger d-none" id="imageError"></small>
+            </div>
+
+            <!-- Location -->
+            <div class="mb-3">
+              <label class="form-label">
+                <i class="fas fa-map-marker-alt"></i> Location
+              </label>
+              <input type="text" name="location" value="{{ user_profile.location }}" class="form-control" id="exampleInputLocation" placeholder="Location" minlength="3" maxlength="20">
+              <small class="text-danger d-none" id="locationError"></small>
+            </div>
+
+            <!-- Bio -->
+            <div class="mb-3">
+              <label class="form-label">
+                <i class="fas fa-info-circle"></i> Your Bio
+              </label>
+              <textarea class="form-control" name="bio" id="exampleFormControlTextarea1" rows="3" placeholder="Your Bio" minlength="3" maxlength="150">{{ user_profile.bio }}</textarea>
+              <small class="text-danger d-none" id="bioError"></small>
+            </div>
+
+            <!-- Save Button -->
+            <div class="card-footer text-center">
+              <button type="submit" class="btn btn-success w-50">
+                <i class="fas fa-save"></i> Save
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('editProfileForm');
+    const locationInput = document.getElementById('exampleInputLocation');
+    const bioInput = document.getElementById('exampleFormControlTextarea1');
+    const imageInput = document.getElementById('exampleInputImage');
+    const imagePreview = document.getElementById('imagePreview');
+    const removeImageButton = document.getElementById('removeImage');
+    const removeImageInput = document.getElementById('removeImageInput');
+
+    const defaultImage = "/static/images/user.png"; // Path to default image
+
+    function showError(input, errorElement, message) {
+      if (message) {
+        errorElement.textContent = message;
+        errorElement.classList.remove('d-none');
+        input.classList.add('is-invalid');
+      } else {
+        errorElement.textContent = '';
+        errorElement.classList.add('d-none');
+        input.classList.remove('is-invalid');
+      }
+    }
+
+    // Validate Location
+    locationInput.addEventListener('blur', function () {
+      showError(locationInput, document.getElementById('locationError'), locationInput.value.trim().length < 3 ? 'Location must be at least 3 characters.' : '');
+    });
+
+    // Validate Bio
+    bioInput.addEventListener('blur', function () {
+      showError(bioInput, document.getElementById('bioError'), bioInput.value.trim().length < 3 ? 'Bio must be at least 3 characters.' : '');
+    });
+
+    // Image Preview and Validation
+    imageInput.addEventListener('change', function () {
+      const file = imageInput.files[0];
+      if (file) {
+        const validImageTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (!validImageTypes.includes(file.type)) {
+          showError(imageInput, document.getElementById('imageError'), 'Invalid image format. Only JPG and PNG are allowed.');
+          imageInput.value = '';
+        } else {
+          showError(imageInput, document.getElementById('imageError'), '');
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            imagePreview.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+          removeImageInput.value = '0'; // Reset remove flag
+        }
+      }
+    });
+
+    // Remove Image Functionality
+    removeImageButton.addEventListener('click', function () {
+      imagePreview.src = defaultImage;  // Set default image
+      imageInput.value = '';  // Clear file input
+      removeImageInput.value = '1';  // Set flag to remove image
+    });
+
+    // Form Validation on Submit
+    form.addEventListener('submit', function (e) {
+      let isValid = true;
+
+      if (locationInput.value.trim().length < 3) {
+        showError(locationInput, document.getElementById('locationError'), 'Location must be at least 3 characters.');
+        isValid = false;
+      }
+
+      if (bioInput.value.trim().length < 3) {
+        showError(bioInput, document.getElementById('bioError'), 'Bio must be at least 3 characters.');
+        isValid = false;
+      }
+
+      if (!isValid) {
+        e.preventDefault();
+      }
+    });
+  });
+</script>
+
+{% endblock content %}

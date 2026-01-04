@@ -1,0 +1,277 @@
+{% extends "./index.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-2">
+    <h2 id="typing-text" class="display-4 fw-bold text-dark text-center"></h2>
+</div>
+{% if messages %}
+    <div id="success-message" class="alert alert-success text-center" style="font-size: 1.5rem; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1050;">
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+{% endif %}
+<div class="container my-5">
+    <div class="hero-section">
+        <div class="hero-text">
+            <h1 class="display-4 fw-bold text-primary">Create a Free <span class="text-warning">Quiz Now</span></h1>
+            <p class="fs-5 text-muted">The versatile data collection tool for professionals. Typeform makes asking easy & answering refreshing.</p>
+            <div class="d-flex flex-wrap gap-3">
+                <a href="{% url 'all_quiz' %}" class="btn btn-primary btn-lg">Start a Quiz</a>
+                {% if not request.user.is_authenticated %}
+                <a href="{% url 'register' %}" class="btn btn-outline-secondary btn-lg">Sign Up</a>
+                {% endif %}
+                <a href="{% url 'view_course' %}" class="btn btn-success btn-lg">Browse Courses</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <img src="{% static 'images/home.png' %}" alt="Quiz Illustration" loading="lazy">
+        </div>
+    </div>
+</div>  
+
+<div class="container text-center">
+    <h2 class="display-4 text-center my-5 text-primary">Leaderboard</h2>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+        {% for user_score in leaderboard_user %}
+        <div class="col">
+            <div class="card shadow-sm border-dark rounded-5 leaderboard-card">
+                <div class="card-body text-center position-relative">
+                    {% if user_score.user.profile.profile_img %}
+                    <img src="{{ user_score.user.profile.profile_img.url }}" class="profile-img" alt="{{ user_score.user.username }}" loading="lazy">
+                    {% else %}
+                    <img src="{% static 'default_profile.jpg' %}" class="profile-img" alt="Default Profile" loading="lazy">
+                    {% endif %}
+                    
+                    <span class="badge rank-badge">#{{ forloop.counter }}</span>
+
+                    <h5 class="card-title fw-bold text-dark">@{{ user_score.user.username }}</h5>
+                    <p class="card-text">Score: <strong>{{ user_score.score }}</strong></p>
+                    <a href="{% url 'leaderboard' %}" class="btn btn-outline-primary mt-3">View Leaderboard</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p class="text-center text-muted">No leaderboard data available yet.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+/* --- Hero Section Responsive Design --- */
+.hero-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 60px 30px;
+    animation: fadeInUp 1s ease-in-out;
+}
+
+.hero-text {
+    max-width: 50%;
+    animation: slideLeft 1s ease-in-out;
+}
+
+.hero-image {
+    max-width: 45%;
+    height: auto;
+    opacity: 0.9;
+    animation: fadeInUp 1s ease-in-out, floatImage 3s infinite ease-in-out;
+}
+
+.hero-image img {
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    object-fit: contain;
+    opacity: 0.9;
+    transition: transform 0.3s ease-in-out;
+}
+
+.hero-image img:hover {
+    transform: scale(1.02);
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .hero-text {
+        max-width: 100%;
+        text-align: center;
+    }
+    .hero-image {
+        max-width: 80%;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        flex-direction: column;
+        text-align: center;
+    }
+    .hero-image {
+        max-width: 90%;
+    }
+}
+
+/* --- Leaderboard Styling --- */
+.leaderboard-card {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s;
+}
+
+.leaderboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
+}
+
+.profile-img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #007bff;
+}
+
+.rank-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #ffc107;
+    color: #212529;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 10px;
+}
+
+/* --- Button Hover Effect --- */
+.btn {
+    transition: all 0.3s ease-in-out;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+}
+
+/* --- Keyframe Animations --- */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes floatImage {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0px); }
+}
+
+@keyframes slideLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+.typing-char {
+    opacity: 0;
+    transform: translateY(10px);
+    display: inline-block;
+    animation: fadeInUp 0.05s ease-in-out forwards;
+}
+
+/* Keyframes for smooth character appearance */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+
+<div class="container my-2">
+    <h2 id="typing-text" class="display-4 fw-bold text-dark text-center"></h2>
+</div>
+
+<style>
+/* Smooth character fade-in effect */
+.typing-char {
+    opacity: 0;
+    transform: translateY(10px);
+    display: inline-block;
+    animation: fadeInUp 0.05s ease-in-out forwards;
+}
+
+/* Ensure spacing is maintained */
+.typing-space {
+    display: inline-block;
+    width: 8px; /* Adjust spacing */
+}
+
+/* Fade-in keyframe animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    let text = "Welcome to QuizHub"; // Text to animate
+    let textContainer = document.getElementById("typing-text");
+
+    textContainer.innerHTML = ""; // Clear existing text
+
+    text.split("").forEach((char, index) => {
+        let span = document.createElement("span");
+        span.textContent = char;
+
+        if (char === " ") {
+            span.classList.add("typing-space"); // Add space class for proper spacing
+        } else {
+            span.classList.add("typing-char");
+            span.style.animationDelay = `${index * 50}ms`; // Delay each character
+        }
+
+        textContainer.appendChild(span);
+    });
+});
+</script>
+<script>
+        // Function to show the success message
+        function showSuccessMessage() {
+            const messageElement = document.getElementById('success-message');
+            messageElement.style.display = 'block'; // Show the message
+            setTimeout(() => {
+                messageElement.style.display = 'none'; // Hide the message after 5 seconds
+            }, 500);
+        }
+    
+        // Call this function when the page loads or after form submission
+        document.addEventListener('DOMContentLoaded', () => {
+            // Simulate triggering the success message
+            showSuccessMessage();
+        });
+    </script>
+{% endblock content %}

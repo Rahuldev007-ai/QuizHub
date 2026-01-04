@@ -1,0 +1,139 @@
+{% extends "./index.html" %}
+
+{% block content %}
+
+<h1 class="display-4 text-center my-5">Dashboard</h1>
+
+<div class="container">
+    <div class="row">
+        <!-- Active Users Card -->
+        <div class="col-sm-3 mb-3">
+            <div class="card">
+                <div class="card-body text-center mt-4">
+                    <h1 class="card-title pricing-card-title">{{ top_users|length }}</h1>
+                    <p class="card-text">Active Users</p>
+                    <ul class="list-group mt-5">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Today
+                            <span class="badge bg-primary rounded-pill">{{ top_users|length }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quizzes Card -->
+        <div class="col-sm-3 mb-3">
+            <div class="card">
+                <div class="card-body text-center mt-4">
+                    <h1 class="card-title pricing-card-title">{{ quizzes|length }}</h1>
+                    <p class="card-text">Quizzes</p>
+                    <ul class="list-group mt-5">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Today
+                            <span class="badge bg-primary rounded-pill">{{ quizzes|length }}</span>
+                        </li>
+                    </ul>                    
+                </div>
+            </div>
+        </div>
+
+        <!-- Submissions Card -->
+        <div class="col-sm-3 mb-3">
+            <div class="card">
+                <div class="card-body text-center mt-4">
+                    <h1 class="card-title pricing-card-title">{{ submissions }}</h1>
+                    <p class="card-text">Submissions</p>
+                    <ul class="list-group mt-5">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Today
+                            <span class="badge bg-primary rounded-pill">{{submissions}}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Questions Card -->
+        <div class="col-sm-3 mb-3">
+            <div class="card">
+                <div class="card-body text-center mt-4">
+                    <h1 class="card-title pricing-card-title">{{ questions }}</h1>
+                    <p class="card-text">Questions</p>
+                    <ul class="list-group mt-5">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Today
+                            <span class="badge bg-primary rounded-pill">{{questions}}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+ 
+    <!-- Mail Section Table -->
+    <div class="row mt-5">
+        <div class="col-sm-12">
+            <h2 class="text-center">Message</h2>
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mail in mails %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ mail.user.username }}</td>
+                        <td>{{ mail.created_at|date:"Y-m-d" }}</td>
+                        <td>
+                            <a href="{% url 'message_view' mail.user.username %}" class="btn btn-primary btn-sm">Open</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">No mails available</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+       <!-- Leaderboard for Top Users -->
+       <div class="row">
+        <div class="col-sm-12">
+            <h2 class="text-center">Top Users</h2>
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">Rank</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user_score in top_users %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ user_score.user.username }}</td>
+                        <td>{{ user_score.score }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center">No users found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% endblock content %}

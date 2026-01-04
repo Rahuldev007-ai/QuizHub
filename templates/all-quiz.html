@@ -1,0 +1,129 @@
+{% extends "./index.html" %}
+{% block content %}
+
+<div class="container">
+    <!-- Page Title -->
+    <h1 class="display-4 text-center my-5 fw-bold text-primary">All Quizzes</h1>
+
+    <!-- Category Dropdown -->
+    <div class="mb-4">
+        <form id="categoryForm" method="get" class="d-flex">
+            <select class="form-select category-dropdown me-2" name="category" id="categorySelect" onchange="document.getElementById('categoryForm').submit();">
+                <option value="" {% if not selected_category %}selected{% endif %}>Select Category</option>
+                {% for category in categories %}
+                    <option value="{{ category.name }}" {% if selected_category == category.name %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
+    <!-- Difficulty Filter (Only Show If Category is Selected) -->
+    {% if selected_category %}
+    <div class="mb-4">
+        <div class="d-flex flex-nowrap overflow-auto filter-buttons">
+            <a href="{% url 'all_quiz' %}?category={{ selected_category }}&difficulty=easy" class="btn btn-outline-success me-2 {% if selected_difficulty == 'easy' %}active{% endif %}">Easy</a>
+            <a href="{% url 'all_quiz' %}?category={{ selected_category }}&difficulty=medium" class="btn btn-outline-warning me-2 {% if selected_difficulty == 'medium' %}active{% endif %}">Medium</a>
+            <a href="{% url 'all_quiz' %}?category={{ selected_category }}&difficulty=hard" class="btn btn-outline-danger me-2 {% if selected_difficulty == 'hard' %}active{% endif %}">Hard</a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Quiz Cards -->
+    <div>
+        {% if quizzes %}
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            {% for quiz in quizzes %}
+            <div class="col">
+                <div class="card h-100 shadow-lg border-0 rounded-4 quiz-card">
+                    <div class="card-body d-flex flex-column">
+                        <h4 class="card-title text-truncate">{{ quiz.title }}</h4>
+                        <p class="card-text text-muted"><strong>Total Questions:</strong> 10</p>
+                        <p class="card-text text-secondary text-truncate">{{ quiz.description|truncatewords:9 }}</p>
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <!-- Start Quiz Button Now Passes Category and Difficulty -->
+<a href="{% url 'quiz' quiz.id %}?difficulty={{ selected_difficulty }}" class="btn btn-success btn-sm">Start Quiz</a>
+
+                            <small class="text-muted">{{ quiz.create_at|timesince }} ago</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center">
+            <p class="text-danger fs-5">No quizzes available for this category or difficulty.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Custom CSS for Styling -->
+<style>
+    /* Dropdown Styling */
+    .category-dropdown {
+        max-width: 300px;
+        font-size: 1rem;
+        padding: 10px;
+        border-radius: 10px;
+        border: 2px solid #007bff;
+    }
+
+    /* Smooth scrolling for filters */
+    .filter-buttons {
+        scrollbar-width: thin;
+        scrollbar-color: #ccc transparent;
+        padding-bottom: 5px;
+    }
+    .filter-buttons::-webkit-scrollbar {
+        height: 6px;
+    }
+    .filter-buttons::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 10px;
+    }
+    .filter-buttons::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    /* Quiz Card Styling */
+    .quiz-card {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        background: #f8f9fa;
+        border-radius: 12px;
+    }
+    .quiz-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Button Spacing */
+    .btn {
+        padding: 10px 15px;
+        font-size: 1rem;
+        font-weight: 500;
+        border-radius: 8px;
+    }
+
+    /* Mobile Optimization */
+    @media (max-width: 768px) {
+        .filter-buttons {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .btn {
+            font-size: 0.9rem;
+            padding: 8px 12px;
+        }
+        .category-dropdown {
+            font-size: 0.9rem;
+            padding: 8px;
+        }
+    }
+</style>
+
+{% endblock content %}

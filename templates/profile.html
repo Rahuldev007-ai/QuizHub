@@ -1,0 +1,58 @@
+{% extends "index.html" %}
+  {%block content%}
+    <h1 class="display-4 text-center my-5">@{{ user_profile.user.username }}'s Profile</h1>
+    {% if messages %}
+    <div id="success-message" class="alert alert-success text-center" style="font-size: 1.5rem; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1050;">
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+{% endif %}
+    
+    <div class="container text-center">
+        <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+            {% if request.user.username == user_profile.user.username %}
+            <a href="{% url 'editProfile' %}" class="btn btn-outline-primary">Edit Profile</a>
+            <a href="{% url 'deleteProfile' %}" class="btn btn-outline-danger">Delete Profile</a>
+            {% endif %}
+           </div>
+
+        <div class="container text-center my-4">
+            <div class="row row-cols-sm-1 row-cols-md-2">
+                <div class="col-12">
+                    <img src="{{ user_profile.profile_img.url }}" class='rounded-circle'alt="user-profile" width="150" height="150">
+                    <h2 class="fs-3">@{{ user_profile.user.username }}</h2>
+                </div>
+                <div class="col-12">
+                    <h2> Username is                        
+                    </i>@{{ user_profile.user.username|title }}
+                    </h2>
+                    <h4>{{user_profile.user.first_name | default:"full_name"}} {{user_profile.user.last_name | default:" is not available"}}</h4>
+                    <p class="fs-5"><i class="fa fa-venus"></i> {{ user_profile.gender | default:"Gender not available" }}.</p>
+                    <p class="fs-5"><i class="fa fa-map-marker" aria-hidden="true"></i> {{ user_profile.location | default:"Location not available" }}.</p>
+                    <p class="fs-5"><i class="fa fa-info-circle" aria-hidden="true"></i> {{ user_profile.bio | default:"Bio not available" }}.</p>
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-5">
+    </div>
+    
+    <script>
+        // Function to show the success message
+        function showSuccessMessage() {
+            const messageElement = document.getElementById('success-message');
+            messageElement.style.display = 'block'; // Show the message
+            setTimeout(() => {
+                messageElement.style.display = 'none'; // Hide the message after 5 seconds
+            }, 2000);
+        }
+    
+        // Call this function when the page loads or after form submission
+        document.addEventListener('DOMContentLoaded', () => {
+            // Simulate triggering the success message
+            showSuccessMessage();
+        });
+    </script>
+    
+    {%endblock content%}

@@ -1,0 +1,217 @@
+{% extends "index.html" %}
+{% block content %}
+
+<h1 class="display-4 text-center my-5">Sign-up Page</h1>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8 col-sm-10">
+      <div class="form-container">
+        {% for message in messages %}
+        <h5 class="text-danger text-center">{{ message }}</h5>
+        {% endfor %}
+
+        <form method="POST" action="" id="registerForm">
+          {% csrf_token %}
+          
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" name="email" id="email" value="{{email}}" placeholder="Enter Email" maxlength="50" required>
+            <small class="error-message"></small>
+          </div>
+          
+          <div class="mb-3">
+            <label for="firstname" class="form-label">First Name</label>
+            <input type="text" class="form-control" name="firstname" id="firstname" value="{{firstname}}" placeholder="Enter First Name" maxlength="20" required>
+            <small class="error-message"></small>
+          </div>
+          
+          <div class="mb-3">
+            <label for="lastname" class="form-label">Last Name</label>
+            <input type="text" class="form-control" name="lastname" id="lastname" value="{{lastname}}" placeholder="Enter Last Name" maxlength="20" required>
+            <small class="error-message"></small>
+          </div>
+          
+          <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" name="username" id="username" value="{{ username }}" placeholder="Enter Username" minlength="3" maxlength="20" required>
+            <small class="error-message"></small>
+          </div>
+          
+        <div class="mb-3">
+    <label for="gender" class="form-label">Gender</label>
+    <select class="form-control" name="gender" id="gender" required>
+       <option value="">Select Gender</option>
+    <option value="Male" {% if gender == "Male" %}selected{% endif %}>Male</option>
+    <option value="Female" {% if gender == "Female" %}selected{% endif %}>Female</option>
+    <option value="Other" {% if gender == "Other" %}selected{% endif %}>Other</option>
+    </select>
+    <small class="error-message"></small>
+</div>
+
+
+
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" name="password" id="password" placeholder="Enter Password" minlength="6" maxlength="20" required>
+            <small class="error-message"></small>
+          </div>
+          
+          <div class="mb-3">
+            <label for="password2" class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" name="password2" id="password2" placeholder="Confirm Password" maxlength="20" required>
+            <small class="error-message"></small>
+          </div>
+          
+          <button type="submit" class="btn btn-primary submit-btn">Register</button>
+          <p class="my-4 text-center">Already a member? <b><a href="{% url 'login' %}">Login</a></b></p>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<style type="text/css">
+    .form-container {
+    background: linear-gradient(135deg, #ffffff, #f8f9fa);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+  }
+
+  .form-control {
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  .form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+
+  .error-border {
+    border: 2px solid red !important;
+  }
+
+  .error-message {
+    color: red;
+    font-size: 14px;
+  }
+
+  .submit-btn {
+    background-color: #007bff;
+    color: white;
+    font-size: 16px;
+    padding: 12px;
+    width: 100%;
+    border-radius: 10px;
+    transition: 0.3s;
+  }
+
+  .submit-btn:hover {
+    background-color: #0056b3;
+  }
+
+</style>
+<script>
+  document.getElementById('registerForm').addEventListener('submit', function(event) {
+    let isValid = true;
+    
+    document.querySelectorAll('.form-control').forEach(input => {
+      validateField(input);
+      if (input.nextElementSibling.textContent !== '') {
+        isValid = false;
+      }
+    });
+
+    // Validate Gender Selection
+    let gender = document.getElementById('gender');
+    let genderError = gender.nextElementSibling;
+    if (gender.value === "") {
+      genderError.textContent = "Please select a gender.";
+      gender.classList.add('error-border');
+      isValid = false;
+    } else {
+      genderError.textContent = "";
+      gender.classList.remove('error-border');
+    }
+    
+    if (!isValid) {
+      alert('Please correct the errors before submitting.');
+      event.preventDefault();
+    }
+  });
+
+  function validateField(field) {
+    const value = field.value.trim();
+    let errorMessage = '';
+
+    if (field.id === 'email') {
+      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailPattern.test(value)) {
+        errorMessage = 'Enter a valid email address.';
+      }
+    }
+    
+    if (field.id === 'firstname' || field.id === 'lastname') {
+      if (!/^[a-zA-Z]+$/.test(value)) {
+        errorMessage = 'Only letters are allowed.';
+      } else if (value.length < 3) {
+        errorMessage = 'Must be at least 3 characters long.';
+      }
+    }
+    
+    if (field.id === 'username') {
+      if (!/^[a-zA-Z]+$/.test(value)) {
+        errorMessage = 'Username should only contain letters.';
+      } else if (value.length < 3) {
+        errorMessage = 'Username must be at least 3 characters long.';
+      }
+    }
+    
+    if (field.id === 'password') {
+      if (value.length < 6) {
+        errorMessage = 'Password must be at least 6 characters long.';
+      }
+    }
+    
+    if (field.id === 'password2') {
+      const password = document.getElementById('password').value;
+      if (value !== password) {
+        errorMessage = 'Passwords do not match.';
+      }
+    }
+    
+    const errorContainer = field.nextElementSibling;
+    errorContainer.textContent = errorMessage;
+
+    // Add error styling
+    if (errorMessage) {
+      field.classList.add('error-border');
+    } else {
+      field.classList.remove('error-border');
+    }
+  }
+  
+  document.querySelectorAll('.form-control').forEach(input => {
+    input.addEventListener('blur', function () {
+      validateField(this);
+    });
+  });
+
+  document.getElementById('gender').addEventListener('change', function () {
+    let genderError = this.nextElementSibling;
+    if (this.value === "") {
+      genderError.textContent = "Please select a gender.";
+      this.classList.add('error-border');
+    } else {
+      genderError.textContent = "";
+      this.classList.remove('error-border');
+    }
+  });
+
+</script>
+
+
+{% endblock content %}

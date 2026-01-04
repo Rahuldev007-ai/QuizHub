@@ -1,0 +1,143 @@
+{% extends "index.html" %}
+{% block content %}
+
+<h1 class="display-4 text-center my-5 text-primary" id="loginHeading">Login</h1>
+
+<div class="container">
+    <div class="row row-cols-sm-1 row-cols-lg-3">
+        <div class="col-12"></div>
+        <div class="col-12">
+            <!-- Display Messages -->
+            {% for message in messages %}
+            <div class="alert alert-danger text-center" role="alert" id="alertMessage">
+                {{ message }}
+            </div>
+            {% endfor %}
+
+            <!-- Login Form -->
+            <form method="POST" action="{% url 'login' %}" id="loginForm">
+                {% csrf_token %}
+                <div class="mb-3">
+
+                    <label for="usernameInput" class="form-label" id="usernameLabel">Username</label>
+                    <input type="text" name="username" class="form-control" id="usernameInput" placeholder="Username" 
+                           value="{{ username|default:'' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="passwordInput" class="form-label" id="passwordLabel">Password</label>
+                    <input type="password" name="password" class="form-control" id="passwordInput" placeholder="Password" required>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="rememberMeCheckbox">
+                    <label class="form-check-label" for="rememberMeCheckbox" id="rememberMeLabel">Remember me</label>
+                </div>
+                <button type="submit" class="btn btn-primary px-5" id="loginButton">Login</button>
+            </form>
+
+            <p class="my-4" id="registerLink">Not a member yet? <b><a href="{% url 'register' %}" id="registerAnchor">Register</a></b></p>
+        </div>
+        <div class="col-12"></div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function (event) {
+        const username = document.getElementById('usernameInput').value;
+        const password = document.getElementById('passwordInput').value;
+
+        if (username.trim() === "") {
+            alert("Please enter a username.");
+            event.preventDefault();
+            return;
+        }
+
+        if (password.trim() === "") {
+            alert("Please enter a password.");
+            event.preventDefault();
+            return;
+        }
+    });
+</script>
+
+<style>
+    #loginHeading {
+        font-family: 'Arial', sans-serif;
+        color: #334;
+        font-weight: 600;
+    }
+
+    #loginForm {
+        background: linear-gradient(135deg, #4631d3, #dbcb2e);
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-control {
+        border-radius: 20px;
+        padding: 15px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #4CAF50;
+        box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+    }
+
+    #loginButton {
+        background-color: #4CAF50;
+        border-radius: 20px;
+        padding: 12px 25px;
+        color: white;
+        font-size: 16px;
+        width: 100%;
+        transition: background-color 0.3s ease;
+    }
+
+    #loginButton:hover {
+        background-color: #45a049;
+    }
+
+    .form-label {
+        font-size: 18px;
+        font-weight: bold;
+        color: white;
+    }
+
+    #rememberMeLabel {
+        font-size: 14px;
+        color: white;
+    }
+
+    #registerLink {
+        font-size: 16px;
+        color: #555;
+    }
+
+    #registerAnchor {
+        color: #4CAF50;
+        text-decoration: none;
+    }
+
+    #registerAnchor:hover {
+        text-decoration: underline;
+    }
+
+    #alertMessage {
+        margin-top: 10px;
+        font-size: 16px;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            margin-top: 20px;
+        }
+
+        #loginButton {
+            width: 100%;
+        }
+    }
+</style>
+
+{% endblock content %}

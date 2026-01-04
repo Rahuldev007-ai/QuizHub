@@ -1,0 +1,99 @@
+{% extends "index.html" %}
+{% block content %}
+
+<h1 class="display-4 text-center my-5 text-primary">feedback</h1>
+
+<main>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <!-- Contact Form -->
+                <form id="contactForm" action="#" method="post" class="contact-form shadow p-4 rounded bg-light">
+                    {% csrf_token %}
+                    
+                    <!-- Username Field -->
+                    <div class="form-group mb-4">
+                        <label for="username" class="font-weight-bold">Username</label>
+                        <input type="text" id="username" name="username" 
+                               value="{{ user.username }}" 
+                               class="form-control" disabled>
+                    </div>
+
+                    <!-- Subject Field -->
+                    <div class="form-group mb-4">
+                        <label for="subject" class="font-weight-bold">Subject</label>
+                        <input type="text" id="subject" name="subject" 
+                               class="form-control" minlength="3" maxlength="50" required>
+                        <small id="subjectHelp" class="form-text text-muted">Subject must be at least 3 characters.</small>
+                    </div>
+
+                    <!-- Message Field -->
+                    <div class="form-group mb-4">
+                        <label for="message" class="font-weight-bold">Message</label>
+                        <textarea id="message" name="message" rows="5" 
+                                  class="form-control" minlength="10" maxlength="100" required></textarea>
+                        <small id="messageHelp" class="form-text text-muted">Message must be at least 10 characters.</small>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary btn-block btn-lg">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- JavaScript for Validation -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('contactForm');
+
+        form.addEventListener('submit', function(event) {
+            const subject = document.getElementById('subject');
+            const message = document.getElementById('message');
+            let isValid = true;
+
+            // Clear existing error styles
+            subject.classList.remove('is-invalid');
+            message.classList.remove('is-invalid');
+
+            // Validate Subject (Minimum 3 characters)
+            if (subject.value.trim().length < 3) {
+                isValid = false;
+                subject.classList.add('is-invalid');
+                event.preventDefault(); // Prevent form submission
+                subject.focus();
+                return;
+            }
+
+            // Validate Message (Minimum 10 characters)
+            if (message.value.trim().length < 10) {
+                isValid = false;
+                message.classList.add('is-invalid');
+                event.preventDefault(); // Prevent form submission
+                message.focus();
+                return;
+            }
+
+            // If all validations pass, the form can be submitted
+        });
+    });
+</script>
+
+<style>
+    /* Custom Styles */
+    .contact-form {
+        background-color: white;
+        border-radius: 10px;
+    }
+
+    .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+
+    .form-control.is-invalid:focus {
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+</style>
+
+{% endblock content %}

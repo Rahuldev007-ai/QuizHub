@@ -1,0 +1,268 @@
+{% extends "./index.html" %}
+
+{% block content %}
+<div class="container my-5">
+    {% if questions|length == 0 %}
+    <div class="alert alert-warning text-center">
+        <h3 class="text-danger">This quiz has no questions available.</h3>
+        <p class="text-muted">Please try another quiz or contact support if this is an error.</p>
+    </div>
+    {% else %}
+
+    <h1 class="display-4 text-center my-4 text-primary text-truncate">{{ quiz.title }} ({{ questions|length }} Questions)</h1>
+    <p class="fs-5 text-center text-secondary mb-5 text-truncate">{{ quiz.description }}</p>
+
+    <div class="container bg-light py-4 px-3 rounded shadow-sm mb-5 d-flex justify-content-between align-items-center flex-wrap">
+        <div class="text-secondary">
+            <i class="bi bi-calendar-event"></i> Created: <strong>{{ quiz.create_at }}</strong>
+        </div>
+        <div class="text-danger fs-5 fw-bold">
+            <i class="bi bi-clock"></i> Time Left: <span id="timer">10:00</span>
+        </div>
+    </div>
+
+    <form id="quizForm" method="POST" action="{% url 'quiz' quiz.id %}">
+        {% csrf_token %}
+        <div class="questions">
+            {% for question in questions %}
+            <div class="question-card card mb-3 shadow-lg rounded-4 {% if forloop.counter > 1 %}d-none{% endif %}" data-question="{{ forloop.counter }}">
+                <div class="card-header bg-primary text-white fw-bold rounded-top">
+                    Q{{ forloop.counter }}. {{ question.text }}
+                </div>
+                <div class="card-body bg-white">
+                    {% for choice in question.choice_set.all %}
+                    <label class="custom-option d-flex align-items-center">
+                        <input type="radio" name="question_{{ question.id }}" value="{{ choice.id }}" class="option-input">
+                        <span class="option-circle">{{ forloop.counter|add:-1|add:"A" }}</span>
+                        <span class="option-text">{{ choice.text }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-4">
+            <button id="prevBtn" type="button" class="btn btn-secondary btn-lg shadow-lg me-3 d-none">
+                <i class="bi bi-arrow-left-circle"></i> Previous
+            </button>
+            <button id="nextBtn" type="button" class="btn btn-primary btn-lg shadow-lg me-3">
+                <i class="bi bi-arrow-right-circle"></i> Next
+            </button>
+            <button id="submitBtn" type="submit" class="btn btn-success btn-lg shadow-lg d-none" disabled>
+                <i class="bi bi-check-circle"></i> Submit Quiz
+            </button>
+        </div>
+    </form>
+    {% endif %}
+</div>
+
+<style>
+    .question-card {
+        border: 2px solid #007bff;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .question-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .custom-option {
+        display: flex;
+        align-items: center;
+        background: #f8f9fa;
+        border: 2px solid #ddd;
+        padding: 5px;
+        margin-bottom: 7px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s ease-in-out;
+        width: 100%;
+    }
+    .custom-option:hover {
+        border-color: #007bff;
+        background: #e9f5ff;
+    }
+    .option-circle {
+        width: 35px;
+        height: 35px;
+        line-height: 35px;
+        border: 2px solid #007bff;
+        color: #007bff;
+        text-align: center;
+        font-weight: bold;
+        border-radius: 50%;
+        margin-right: 12px;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+    }
+    .option-input {
+        display: none;
+    }
+    .option-input:checked + .option-circle {
+        background: #28a745;
+        border-color: #28a745;
+        color: white;
+    }
+    .option-input:checked + .option-circle + .option-text {
+        font-weight: bold;
+        color: #28a745;
+    }
+
+    .bg-light {
+        border-left: 5px solid #007bff;
+        padding-left: 15px;
+    }
+
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+    .btn-primary, .btn-success, .btn-secondary {
+        border: none;
+        transition: 0.3s ease;
+    }
+    .btn-primary:hover { background: #0056d6; }
+    .btn-success:hover { background: #218838; }
+    .btn-secondary:hover { background: #495057; }
+</style>
+<!-- JavaScript for Timer and Navigation -->
+<script>
+    let totalTime = 10 * 60; // 10 minutes in seconds
+    const timerDisplay = document.getElementById('timer');
+    const form = document.getElementById('quizForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const questionCards = document.querySelectorAll('.question-card');
+    let currentQuestion = 1;
+    let timer;
+
+    // Function to start the timer
+    function startTimer() {
+        timer = setInterval(function () {
+            let minutes = Math.floor(totalTime / 60);
+            let seconds = totalTime % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            if (totalTime <= 0) {
+                clearInterval(timer);
+                alert("Time is up! Submitting the quiz...");
+                form.submit();
+            }
+            totalTime--;
+        }, 1000);
+    }
+
+    // Function to show the current question
+    function showQuestion(questionIndex) {
+        questionCards.forEach((card, index) => {
+            card.classList.toggle('d-none', index !== questionIndex - 1);
+        });
+
+        // Update navigation button visibility
+        prevBtn.classList.toggle('d-none', questionIndex === 1);
+        nextBtn.classList.toggle('d-none', questionIndex === questionCards.length);
+        submitBtn.classList.toggle('d-none', questionIndex !== questionCards.length);
+
+        checkAnswers(); // Update submit button state
+    }
+
+    // Add hidden input to store time taken
+    // form.addEventListener('submit', function () {
+    //     const hiddenInput = document.createElement("input");
+    //     hiddenInput.type = "hidden";
+    //     hiddenInput.name = "time_taken";
+
+    //     let minutes = Math.floor(totalTime / 60);
+    //     let seconds = totalTime % 60;
+    //     hiddenInput.value = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    //     form.appendChild(hiddenInput);
+
+    //     submitBtn.disabled = true;
+    //     submitBtn.innerHTML = '<i class="bi bi-arrow-repeat"></i> Submitting...';
+    //     clearInterval(timer);
+    // });
+
+
+    let startTime = Date.now(); // Capture start time when the form is initialized
+
+form.addEventListener('submit', function () {
+    const hiddenInput = document.createElement("input");
+    hiddenInput.type = "hidden";
+    hiddenInput.name = "time_taken";
+    
+    // Calculate total time spent
+    let totalTimeSpent = Math.floor((Date.now() - startTime) / 1000); // Total time in seconds
+    
+    let minutes = Math.floor(totalTimeSpent / 60);
+    let seconds = totalTimeSpent % 60;
+
+    hiddenInput.value = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    form.appendChild(hiddenInput);
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="bi bi-arrow-repeat"></i> Submitting...';
+
+    clearInterval(timer); // Assuming `timer` is the interval that counts down remaining time
+});
+
+
+    // Function to check if all questions are answered
+    function checkAnswers() {
+        let allAnswered = Array.from(questionCards).every(card => {
+            return card.querySelector('input[type="radio"]:checked');
+        });
+        submitBtn.disabled = !allAnswered;
+    }
+
+    // Add event listeners to radio buttons
+    document.querySelectorAll('input[type="radio"]').forEach(function (radioButton) {
+        radioButton.addEventListener('change', checkAnswers);
+    });
+
+    // Navigation event listeners
+    function validateCurrentQuestion() {
+        let currentCard = questionCards[currentQuestion - 1];
+        let selectedOption = currentCard.querySelector('input[type="radio"]:checked');
+        let errorMessage = currentCard.querySelector('.error-message');
+
+        if (!selectedOption) {
+            if (!errorMessage) {
+                errorMessage = document.createElement('p');
+                errorMessage.className = 'error-message text-danger mt-0 mx-1 mb-0';
+                errorMessage.textContent = 'Please select an option before proceeding.';
+                currentCard.appendChild(errorMessage);
+            }
+            return false;
+        } else {
+            if (errorMessage) errorMessage.remove();
+            return true;
+        }
+    }
+
+    // Navigation event listeners
+    prevBtn.addEventListener('click', () => {
+        if (currentQuestion > 1) {
+            currentQuestion--;
+            showQuestion(currentQuestion);
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (validateCurrentQuestion()) {
+            if (currentQuestion < questionCards.length) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            }
+        }
+    });
+    // Initialize quiz
+    window.onload = function () {
+        startTimer();
+        showQuestion(currentQuestion);
+    };
+</script>
+
+{% endblock content %}
+
