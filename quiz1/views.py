@@ -7,10 +7,10 @@ from .models import Quiz, Question, Choice, UserScore, UserAnswer
 from .models import Category
 from django.db.models import Q
 from django.utils import timezone
-import datetime,timedelta
+import datetime
+from datetime import timedelta
 import random
 from django.shortcuts import render, get_object_or_404
-# from datetime import datetime, timedelta
 # from random import shuffle
 
 
