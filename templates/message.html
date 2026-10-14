@@ -1,30 +1,63 @@
 {% extends "./index.html" %}
+{% load static %}
+
+{% block title %}Messages from @{{ user_profile.user.username }} — QuizHub{% endblock title %}
+{% block meta_robots %}noindex, nofollow{% endblock meta_robots %}
 
 {% block content %}
-    <h1 class="display-4 text-center my-5">Messages From @{{ user_profile.user.username }}</h1>
-
-    <main>
-        <div class="container col-md-8 col-sm-12">
-            <article>
-                <!-- Loop through messages and display them -->
-                {% if messages %}
-                    {% for message in messages %}
-                        <sub>From</sub>
-                        <a href="{% url 'profile' user_profile.user.username %}" title="Click to see profile">@{{ user_profile.user.username }}</a>
-                        <br><br>
-                        <sub>Received At</sub>
-                        <p>{{ message.created_at|date:"Y-m-d" }}</p>
-                        <sub>Subject</sub>
-                        <p>{{ message.subject }}</p>
-                        <sub>Message</sub>
-                        <p>{{ message.message }}</p>
-                        <hr>
-                    {% endfor %}
-                {% else %}
-                    <p>No messages found.</p>
-                {% endif %}
-            </article>
+<section class="section-pad chapter-paper" style="padding-top: 140px; min-height: 85vh;">
+    <div class="zh-container zh-container-narrow">
+        <!-- Numbered Label -->
+        <div class="section-number">
+            <span class="sn-num">01</span>
+            <span>Correspondence / Inbound Transmission Archive</span>
         </div>
-    </main>
 
+        <div style="margin-bottom: 40px;" class="reveal">
+            <h1>Scholar. <em>Correspondence.</em></h1>
+            <p class="lede" style="margin-top: 14px;">
+                Transmissions dispatched by scholar 
+                <a href="{% url 'profile' user_profile.user.username %}" style="text-decoration: underline; text-underline-offset: 4px;">
+                    @{{ user_profile.user.username }}
+                </a>.
+            </p>
+        </div>
+
+        <div class="dispatches-stack reveal">
+            {% if messages %}
+                {% for message in messages %}
+                <div class="zh-card-light" style="margin-bottom: 24px; padding: clamp(28px, 4vw, 40px); background: var(--chalk);">
+                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px;">
+                        <span class="eyebrow" style="margin: 0; padding: 0; border: none; color: var(--ochre);">
+                            Dispatch 0{{ forloop.counter }}
+                        </span>
+                        <span style="font-size: 11px; opacity: 0.6; letter-spacing: 0.12em; text-transform: uppercase;">
+                            {{ message.created_at|date:"F d, Y • H:i" }}
+                        </span>
+                    </div>
+
+                    <h3 style="font-size: 22px; margin-bottom: 16px;">{{ message.subject }}</h3>
+                    
+                    <p style="font-size: 15px; line-height: 1.7; color: rgba(30, 33, 29, 0.85); white-space: pre-line; margin-bottom: 0;">
+                        {{ message.message }}
+                    </p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="zh-card-light" style="text-align: center; padding: 60px 20px;">
+                    <h3>No transmissions found</h3>
+                    <p style="color: rgba(30, 33, 29, 0.7); margin-top: 12px;">
+                        No inquiry or feedback notes have been recorded for this participant.
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div style="margin-top: 40px;">
+            <a href="{% url 'dashboard' %}" class="zh-btn zh-btn-outline">
+                ← Return to Oversight Dashboard
+            </a>
+        </div>
+    </div>
+</section>
 {% endblock content %}

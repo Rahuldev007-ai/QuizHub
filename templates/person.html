@@ -1,104 +1,73 @@
 {% extends "index.html" %}
+{% load static %}
+
+{% block title %}Scholar Network — Directory | QuizHub{% endblock title %}
+{% block meta_robots %}noindex, nofollow{% endblock meta_robots %}
+
 {% block content %}
+<section class="section-pad chapter-paper" style="padding-top: 140px; min-height: 85vh;">
+    <div class="zh-container">
+        <!-- Numbered Label -->
+        <div class="section-number">
+            <span class="sn-num">01</span>
+            <span>Scholar Network / Peer Registry</span>
+        </div>
 
-<style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-        }
+        <div style="margin-bottom: 50px;" class="reveal">
+            <h1>Scholar. <em>Colleagues.</em></h1>
+            <p class="lede" style="max-width: 600px; margin-top: 20px;">
+                Discover and benchmark fellow technical scholars participating across QuizHub evaluation curricula.
+            </p>
+        </div>
 
-        h1 {
-            color: #007bff;
-            margin-bottom: 20px;
-        }
-
-        .friend-list {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .search-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .search-container input {
-            border-radius: 50px;
-            padding: 10px 20px;
-        }
-
-        .search-container button {
-            border-radius: 50px;
-        }
-
-        .card {
-            border: none;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        .card img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-        }
-
-        .send-request-btn {
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .send-request-btn.sent {
-            background-color: #6c757d;
-            color: #fff;
-            pointer-events: none;
-        }
-
-        .user-count {
-            font-weight: bold;
-            margin-top: 20px;
-        }
-    </style>
-
-    <div class="container mt-5">
-        <h1 class="text-center">Send Friend Request</h1>
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                
-                <div class="search-container mb-4">
-                    <input type="text" id="friendName" class="form-control" placeholder="Search Friend's Name">
-                    <button id="sendRequest" class="btn btn-primary">Search</button>
-                </div>
-
-                <div id="userList" class="row">
-                    {% for user in all_users %}
-                    <div class="col-md-3 mb-3">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <img src="user.profile_img.url|default:'static/images/user.png" class="rounded-circle mb-2" alt="">
-                                <h5 class="card-title">{{user.username}}</h5>
-                                <button class="btn btn-success send-request-btn">Send Request</button><br>
-                                <a href = '' class="">View Profile</a>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
+        <!-- Filter / Search Bar -->
+        <div class="zh-card-light reveal" style="padding: 20px 24px; margin-bottom: 40px; background: var(--chalk);">
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <label for="peerSearch" class="zh-label" style="margin: 0;">Search Registry:</label>
+                <input type="text" id="peerSearch" class="zh-input" placeholder="Type scholar identifier..." 
+                       style="max-width: 400px; padding: 6px 0;" oninput="filterScholars(this.value)">
             </div>
         </div>
-    </div>
 
-    <script>
-        document.querySelectorAll('.send-request-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                this.classList.add('sent');
-                this.textContent = 'Request Sent';
-            });
+        <!-- Scholars Grid -->
+        <div class="zh-grid-4" id="scholarsGrid">
+            {% for scholar in all_users %}
+            <article class="zh-card-light scholar-card reveal" data-username="{{ scholar.username|lower }}" style="text-align: center; padding: 32px 20px;">
+                <div style="width: 72px; height: 72px; border-radius: 50%; background: var(--ink); color: #ffffff; display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 28px; margin: 0 auto 18px; border: 1px solid var(--line);">
+                    {{ scholar.username|slice:":1"|upper }}
+                </div>
+
+                <h3 style="font-size: 20px; margin-bottom: 6px;">@{{ scholar.username }}</h3>
+                <p style="font-size: 13px; opacity: 0.65; margin-bottom: 20px;">
+                    Technical Candidate
+                </p>
+
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="{% url 'profile' scholar.username %}" class="zh-btn zh-btn-outline zh-btn-sm">
+                        View Dossier <span class="zh-btn-arrow">→</span>
+                    </a>
+                </div>
+            </article>
+            {% empty %}
+            <div class="zh-card-light" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                <p style="color: rgba(30, 33, 29, 0.6); margin: 0;">No peer scholars currently registered in this index.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<script>
+    function filterScholars(query) {
+        const q = query.trim().toLowerCase();
+        document.querySelectorAll('.scholar-card').forEach((card) => {
+            const username = card.getAttribute('data-username');
+            if (!q || username.includes(q)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
         });
-    </script>
-    {% endblock content %}
+    }
+</script>
+{% endblock content %}

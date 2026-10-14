@@ -1,84 +1,114 @@
-{% extends "./index.html" %} 
-{% load static %}  
-{% block content %} 
-<!-- Course Header Section --> 
-<div class="container text-center my-5">     
-    <h1 class="display-4 fw-bold mb-4">Explore Our Courses</h1>     
-    <p class="fs-4 mb-4">Enhance your skills and knowledge with our expertly designed courses to help you excel in your career.</p> 
-</div>  
+{% extends "./index.html" %}
+{% load static %}
 
-<!-- Course Overview Section --> 
-<div class="container">     
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 g-4">         
-        <!-- Course Card 1 -->         
-        <div class="col">             
-            <div class="card shadow-lg border-light rounded-3 hover-effect h-100">                 
-                <img src="{% static 'images/python.png' %}" class="card-img-top rounded-3" alt="Course 1">                 
-                <div class="card-body d-flex flex-column">                     
-                    <h5 class="card-title fw-bold">Introduction to Python</h5>                     
-                    <p class="card-text flex-grow-1">Master Python fundamentals, one of the most versatile and widely used programming languages today.</p>                     
-                    <a href="https://drive.google.com/file/d/1_qrIARxbLWenADOUp0e1M1RFegSEbORX/view" class="btn btn-primary btn-lg mt-auto">Start Learning</a>                 
-                </div>             
-            </div>         
-        </div>          
-        
-        <!-- Course Card 2 -->         
-        <div class="col">             
-            <div class="card shadow-lg border-light rounded-3 hover-effect h-100">                 
-                <img src="{% static 'images/programmerUsinghtmlcssjs.jpg' %}" class="card-img-top rounded-3" alt="Course 2">                 
-                <div class="card-body d-flex flex-column">                     
-                    <h5 class="card-title fw-bold">Web Development with HTML & CSS</h5>                     
-                    <p class="card-text flex-grow-1">Learn HTML & CSS, the building blocks for modern web design, and start building beautiful websites.</p>                     
-                    <a href="https://drive.google.com/file/d/1WYAlLluE4POQgvHAXLOG5FPF6Zo01zsC/view?usp=drive_link" class="btn btn-primary btn-lg mt-auto">Start Learning</a>                 
-                </div>             
-            </div>         
-        </div>          
-        
-        <!-- Course Card 3 -->         
-        <div class="col">             
-            <div class="card shadow-lg border-light rounded-3 hover-effect h-100">                 
-                <img src="{% static 'images/js-infojpg.jpg' %}" class="card-img-top rounded-3" alt="Course 3">                 
-                <div class="card-body d-flex flex-column">                     
-                    <h5 class="card-title fw-bold">JavaScript for Beginners</h5>                     
-                    <p class="card-text flex-grow-1">Dive into JavaScript, the essential language for dynamic and interactive web applications.</p>                     
-                    <a href="https://drive.google.com/file/d/1-Jsk8zTeJCwDzMXTFOpzowy5TKRr-QfX/view?usp=drive_link" class="btn btn-primary btn-lg mt-auto">Start Learning</a>                 
-                </div>             
-            </div>         
-        </div>     
-    </div> 
-</div>   
-{% endblock content %}  
+{% block title %}Curricula & Study Tracks — QuizHub{% endblock title %}
+{% block meta_description %}Explore foundational engineering syllabi in Python, Web Standards, and JavaScript to prepare for evaluation sessions.{% endblock meta_description %}
 
-<!-- Custom CSS for hover effects --> 
-<style>     
-    /* Hover effect for cards */     
-    .hover-effect:hover {         
-        transform: translateY(-10px);         
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);         
-        transition: all 0.3s ease-in-out;     
-    }      
-    
-    /* Button Hover Effect */     
-    .btn:hover {         
-        background-color: #0056b3;         
-        color: white;         
-        transition: background-color 0.3s ease;     
-    }      
-    
-    /* Add transition to image on hover */     
-    .card-img-top:hover {         
-        transform: scale(1.05);         
-        transition: transform 0.3s ease-in-out;     
-    } 
-    
-    /* Ensure equal height for cards */
-    .card { 
-        display: flex; 
-        flex-direction: column;
-    }
-    
-    .card-body { 
-        display: flex; 
-        flex-direction: column; 
-    }
-</style>
+{% block content %}
+<section class="section-pad chapter-paper" style="padding-top: 140px;">
+    <div class="zh-container">
+        <!-- Numbered Label -->
+        <div class="section-number">
+            <span class="sn-num">01</span>
+            <span>Curricula / Technical Study Tracks</span>
+        </div>
+
+        <div style="margin-bottom: 50px;" class="reveal">
+            <h1>Structured. <em>Syllabi.</em></h1>
+            <p class="lede" style="max-width: 600px; margin-top: 20px;">
+                Curated foundational curricula authored to prepare candidates for rigorous technical assessments and systems design challenges.
+            </p>
+        </div>
+
+        <!-- Courses Grid -->
+        <div class="zh-grid-3">
+            <!-- Course 1: Python -->
+            <article class="zh-card-light reveal" style="display: flex; flex-direction: column; padding: 0; overflow: hidden;">
+                <div style="height: 220px; overflow: hidden;">
+                    <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80" 
+                         alt="Python programming foundations" 
+                         style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease-editorial);"
+                         onmouseover="this.style.transform='scale(1.04)'"
+                         onmouseout="this.style.transform='scale(1)'"
+                         loading="lazy">
+                </div>
+                <div style="padding: clamp(24px, 3vw, 32px); display: flex; flex-direction: column; flex-grow: 1;">
+                    <span class="eyebrow" style="color: var(--ochre); margin-bottom: 12px; border: none; padding: 0;">
+                        Track 01 / Core Logic
+                    </span>
+                    <h3 style="font-size: 24px; margin-bottom: 12px;">Introduction to Python Systems</h3>
+                    <p style="font-size: 14.5px; line-height: 1.6; color: rgba(30, 33, 29, 0.75); margin-bottom: 24px; flex-grow: 1;">
+                        Master Python internals, object memory allocation, scoping rules, generator mechanics, and foundational syntax patterns.
+                    </p>
+                    <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center;">
+                        <a href="https://drive.google.com/file/d/1_qrIARxbLWenADOUp0e1M1RFegSEbORX/view" target="_blank" rel="noopener noreferrer" class="zh-btn zh-btn-ink zh-btn-sm">
+                            Access Curriculum <span class="zh-btn-arrow">↗</span>
+                        </a>
+                        <span style="font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.14em;">
+                            Self-Paced
+                        </span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Course 2: Web Dev -->
+            <article class="zh-card-light reveal" style="display: flex; flex-direction: column; padding: 0; overflow: hidden;">
+                <div style="height: 220px; overflow: hidden;">
+                    <img src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=800&q=80" 
+                         alt="Web design and standards drafting" 
+                         style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease-editorial);"
+                         onmouseover="this.style.transform='scale(1.04)'"
+                         onmouseout="this.style.transform='scale(1)'"
+                         loading="lazy">
+                </div>
+                <div style="padding: clamp(24px, 3vw, 32px); display: flex; flex-direction: column; flex-grow: 1;">
+                    <span class="eyebrow" style="color: var(--ochre); margin-bottom: 12px; border: none; padding: 0;">
+                        Track 02 / Interface
+                    </span>
+                    <h3 style="font-size: 24px; margin-bottom: 12px;">Web Standards with HTML & CSS</h3>
+                    <p style="font-size: 14.5px; line-height: 1.6; color: rgba(30, 33, 29, 0.75); margin-bottom: 24px; flex-grow: 1;">
+                        Rigorous dive into W3C semantic specifications, CSS cascade mechanics, modern flexbox and grid layouts, and accessibility guidelines.
+                    </p>
+                    <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center;">
+                        <a href="https://drive.google.com/file/d/1WYAlLluE4POQgvHAXLOG5FPF6Zo01zsC/view?usp=drive_link" target="_blank" rel="noopener noreferrer" class="zh-btn zh-btn-ink zh-btn-sm">
+                            Access Curriculum <span class="zh-btn-arrow">↗</span>
+                        </a>
+                        <span style="font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.14em;">
+                            Self-Paced
+                        </span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Course 3: JavaScript -->
+            <article class="zh-card-light reveal" style="display: flex; flex-direction: column; padding: 0; overflow: hidden;">
+                <div style="height: 220px; overflow: hidden;">
+                    <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80" 
+                         alt="JavaScript code on screen" 
+                         style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease-editorial);"
+                         onmouseover="this.style.transform='scale(1.04)'"
+                         onmouseout="this.style.transform='scale(1)'"
+                         loading="lazy">
+                </div>
+                <div style="padding: clamp(24px, 3vw, 32px); display: flex; flex-direction: column; flex-grow: 1;">
+                    <span class="eyebrow" style="color: var(--ochre); margin-bottom: 12px; border: none; padding: 0;">
+                        Track 03 / Concurrency
+                    </span>
+                    <h3 style="font-size: 24px; margin-bottom: 12px;">JavaScript Engine Internals</h3>
+                    <p style="font-size: 14.5px; line-height: 1.6; color: rgba(30, 33, 29, 0.75); margin-bottom: 24px; flex-grow: 1;">
+                        Understand event loops, asynchronous microtask queues, closure retention, prototype inheritance chains, and ESNext paradigms.
+                    </p>
+                    <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center;">
+                        <a href="https://drive.google.com/file/d/1-Jsk8zTeJCwDzMXTFOpzowy5TKRr-QfX/view?usp=drive_link" target="_blank" rel="noopener noreferrer" class="zh-btn zh-btn-ink zh-btn-sm">
+                            Access Curriculum <span class="zh-btn-arrow">↗</span>
+                        </a>
+                        <span style="font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.14em;">
+                            Self-Paced
+                        </span>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+{% endblock content %}

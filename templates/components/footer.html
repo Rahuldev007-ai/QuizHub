@@ -1,10 +1,63 @@
-<footer class="py-3 my-4">
-    <ul class="nav justify-content-center border-bottom pb-3 mb-3">
-        <li class="nav-item"><a href="{% url 'home' %}" class="nav-link px-2 text-body-secondary">Home</a></li>
-        <li class="nav-item"><a href="{% url "leaderboard" %}" class="nav-link px-2 text-body-secondary">leaderboard</a></li>
-        <li class="nav-item"><a href="{% url "contactUs" %}" class="nav-link px-2 text-body-secondary">Contact</a></li>
-        <li class="nav-item"><a href="{% url "termsAndConditions" %}" class="nav-link px-2 text-body-secondary">FAQs</a></li>
-        <li class="nav-item"><a href="{% url "about" %}" class="nav-link px-2 text-body-secondary">About</a></li>
-    </ul>
-    <p class="text-center text-body-secondary">© 2025, QuizHub</p>
+{% load static %}
+<footer class="site-footer" role="contentinfo">
+    <div class="zh-container">
+        <div class="footer-grid">
+            <!-- Brand & Mission Column -->
+            <div class="footer-col">
+                <a href="{% url 'home' %}" class="wordmark" style="color: #ffffff; margin-bottom: 24px;">
+                    QuizHub <em>/</em>
+                </a>
+                <p style="font-size: 13.5px; line-height: 1.7; color: rgba(255, 255, 255, 0.65); max-width: 380px;">
+                    An editorial evaluation platform crafted for discerning minds. Rigorous assessments in computer science, software engineering, and technical mastery.
+                </p>
+                <p style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ochre); margin-top: 24px;">
+                    Curated Assessment • Version 2.0
+                </p>
+            </div>
+
+            <!-- Platform Directory -->
+            <div class="footer-col">
+                <h5>Platform</h5>
+                <ul>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'all_quiz' %}">All Quizzes</a></li>
+                    <li><a href="{% url 'leaderboard' %}">Leaderboard</a></li>
+                    {% if request.user.is_superuser %}
+                    <li><a href="{% url 'dashboard' %}">Admin Dashboard</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Disciplines -->
+            <div class="footer-col">
+                <h5>Disciplines</h5>
+                <ul>
+                    <li><a href="{% url 'view_course' %}">Python Foundations</a></li>
+                    <li><a href="{% url 'view_course' %}">Web Architecture</a></li>
+                    <li><a href="{% url 'view_course' %}">JavaScript Internals</a></li>
+                    <li><a href="{% url 'all_quiz' %}">Browse Catalog →</a></li>
+                </ul>
+            </div>
+
+            <!-- Legal & Inquiry -->
+            <div class="footer-col">
+                <h5>Standards & Inquiries</h5>
+                <ul>
+                    <li><a href="{% url 'about' %}">About QuizHub</a></li>
+                    <li><a href="{% url 'contactUs' %}">Inquiries & Feedback</a></li>
+                    <li><a href="{% url 'termsAndConditions' %}">Terms & Code of Honor</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div>
+                © 2026 QuizHub. All rights reserved. Precision assessment architecture.
+            </div>
+            <div style="display: flex; gap: 24px;">
+                <a href="{% url 'termsAndConditions' %}" style="color: inherit;">Privacy & Ethics</a>
+                <a href="#main-content" style="color: inherit;">Top ↑</a>
+            </div>
+        </div>
+    </div>
 </footer>

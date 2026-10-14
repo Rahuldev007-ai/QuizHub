@@ -1,268 +1,397 @@
 {% extends "./index.html" %}
+{% load static %}
+
+{% block title %}{{ quiz.title }} — Proctored Assessment Session | QuizHub{% endblock title %}
+{% block meta_robots %}noindex, nofollow{% endblock meta_robots %}
+{% block body_class %}quiz-mode-active{% endblock body_class %}
 
 {% block content %}
-<div class="container my-5">
+<div class="quiz-proctor-wrap">
     {% if questions|length == 0 %}
-    <div class="alert alert-warning text-center">
-        <h3 class="text-danger">This quiz has no questions available.</h3>
-        <p class="text-muted">Please try another quiz or contact support if this is an error.</p>
+    <div class="zh-container" style="max-width: 600px; padding-top: 100px; text-align: center;">
+        <div class="zh-card-light" style="padding: 48px 32px;">
+            <h2>No questions <em>available.</em></h2>
+            <p style="color: rgba(30, 33, 29, 0.7); margin: 16px 0 24px;">
+                This assessment does not contain active questions in the repository.
+            </p>
+            <a href="{% url 'all_quiz' %}" class="zh-btn zh-btn-ink">
+                Return to All Quizzes <span class="zh-btn-arrow">→</span>
+            </a>
+        </div>
     </div>
     {% else %}
 
-    <h1 class="display-4 text-center my-4 text-primary text-truncate">{{ quiz.title }} ({{ questions|length }} Questions)</h1>
-    <p class="fs-5 text-center text-secondary mb-5 text-truncate">{{ quiz.description }}</p>
-
-    <div class="container bg-light py-4 px-3 rounded shadow-sm mb-5 d-flex justify-content-between align-items-center flex-wrap">
-        <div class="text-secondary">
-            <i class="bi bi-calendar-event"></i> Created: <strong>{{ quiz.create_at }}</strong>
+    <!-- Top Proctored Exam Header (Fixed At Top, Zero Clutter) -->
+    <header class="quiz-proctor-bar">
+        <!-- Brand & Quiz Name -->
+        <div class="quiz-proctor-brand">
+            <span>QuizHub <em>/</em></span>
+            <span style="font-family: var(--sans); font-size: 13px; font-weight: 500; opacity: 0.8; letter-spacing: 0.04em; text-transform: uppercase;">
+                {{ quiz.title }}
+            </span>
         </div>
-        <div class="text-danger fs-5 fw-bold">
-            <i class="bi bi-clock"></i> Time Left: <span id="timer">10:00</span>
-        </div>
-    </div>
 
-    <form id="quizForm" method="POST" action="{% url 'quiz' quiz.id %}">
-        {% csrf_token %}
-        <div class="questions">
-            {% for question in questions %}
-            <div class="question-card card mb-3 shadow-lg rounded-4 {% if forloop.counter > 1 %}d-none{% endif %}" data-question="{{ forloop.counter }}">
-                <div class="card-header bg-primary text-white fw-bold rounded-top">
-                    Q{{ forloop.counter }}. {{ question.text }}
-                </div>
-                <div class="card-body bg-white">
-                    {% for choice in question.choice_set.all %}
-                    <label class="custom-option d-flex align-items-center">
-                        <input type="radio" name="question_{{ question.id }}" value="{{ choice.id }}" class="option-input">
-                        <span class="option-circle">{{ forloop.counter|add:-1|add:"A" }}</span>
-                        <span class="option-text">{{ choice.text }}</span>
-                    </label>
-                    {% endfor %}
-                </div>
-            </div>
+        <!-- Question Jump Strip -->
+        <div style="display: flex; gap: 6px; align-items: center;" id="questionJumpStrip">
+            {% for q in questions %}
+            <button type="button" 
+                    class="quiz-jump-pill {% if forloop.first %}active{% endif %}" 
+                    data-jump="{{ forloop.counter }}" 
+                    title="Jump to Question {{ forloop.counter }}">
+                {{ forloop.counter }}
+            </button>
             {% endfor %}
         </div>
 
-        <div class="text-center mt-4">
-            <button id="prevBtn" type="button" class="btn btn-secondary btn-lg shadow-lg me-3 d-none">
-                <i class="bi bi-arrow-left-circle"></i> Previous
-            </button>
-            <button id="nextBtn" type="button" class="btn btn-primary btn-lg shadow-lg me-3">
-                <i class="bi bi-arrow-right-circle"></i> Next
-            </button>
-            <button id="submitBtn" type="submit" class="btn btn-success btn-lg shadow-lg d-none" disabled>
-                <i class="bi bi-check-circle"></i> Submit Quiz
+        <!-- Live Clock Timer & Controls -->
+        <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="display: flex; align-items: baseline; gap: 6px;">
+                <span class="zh-label" style="margin: 0; font-size: 8.5px;">Remaining:</span>
+                <span id="timer" style="font-family: var(--serif); font-size: 22px; font-weight: 500; color: var(--clay); line-height: 1;">10:00</span>
+            </div>
+            <button type="button" id="fullscreenToggleBtn" class="zh-btn zh-btn-outline zh-btn-sm" style="padding: 0 12px; height: 30px; font-size: 8px;">
+                Fullscreen
             </button>
         </div>
-    </form>
+    </header>
+
+    <!-- Progress Tracker Line -->
+    <div style="width: 100%; height: 2px; background: var(--line); position: relative;">
+        <div id="quizProgressBar" style="position: absolute; top: 0; left: 0; height: 100%; background: var(--ink); width: 10%; transition: width 0.3s ease;"></div>
+    </div>
+
+    <!-- Main Exam Stage (Top-Anchored, Immediate View) -->
+    <main class="quiz-proctor-stage">
+        <div class="quiz-card-surface">
+            
+            <form id="quizForm" method="POST" action="{% url 'quiz' quiz.id %}" novalidate>
+                {% csrf_token %}
+
+                <!-- Container of Individual Question Cards -->
+                <div id="questionsContainer">
+                    {% for question in questions %}
+                    <div class="question-card" data-question="{{ forloop.counter }}" style="display: {% if forloop.counter == 1 %}block{% else %}none{% endif %};">
+                        
+                        <!-- Top Metadata inside card -->
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; border-bottom: 1px solid var(--line); padding-bottom: 10px;">
+                            <span class="eyebrow" style="margin: 0; padding: 0; border: none; color: var(--ochre);">
+                                Question 0{{ forloop.counter }} of 0{{ questions|length }}
+                            </span>
+                            <span style="font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.5; font-weight: 500;">
+                                Proctored Session / Single Choice
+                            </span>
+                        </div>
+
+                        <!-- Question Statement (Prominently Placed at Top) -->
+                        <h2 style="font-family: var(--serif); font-size: clamp(21px, 2.3vw, 29px); font-weight: 400; line-height: 1.35; margin: 12px 0 22px; color: var(--ink);">
+                            {{ question.text }}
+                        </h2>
+
+                        <!-- Choices Stack -->
+                        <div class="choices-stack" style="margin-bottom: 24px;">
+                            {% for choice in question.choice_set.all %}
+                            <label class="quiz-option-label" for="choice_{{ choice.id }}" data-choice-id="{{ choice.id }}">
+                                <input type="radio" 
+                                       name="question_{{ question.id }}" 
+                                       id="choice_{{ choice.id }}" 
+                                       value="{{ choice.id }}" 
+                                       class="zh-option-radio"
+                                       style="position: absolute; opacity: 0; pointer-events: none;">
+                                
+                                <span class="quiz-option-key">
+                                    {% if forloop.counter == 1 %}A{% elif forloop.counter == 2 %}B{% elif forloop.counter == 3 %}C{% elif forloop.counter == 4 %}D{% else %}{{ forloop.counter }}{% endif %}
+                                </span>
+                                
+                                <span class="quiz-option-text" style="font-size: 15px; line-height: 1.45; font-weight: 400;">
+                                    {{ choice.text }}
+                                </span>
+                            </label>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Action Controls Toolbar -->
+                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 18px; border-top: 1px solid var(--line); flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <button id="prevBtn" type="button" class="zh-btn zh-btn-outline zh-btn-sm" style="display: none;">
+                            ← Previous
+                        </button>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; align-items: center; margin-left: auto;">
+                        <button id="nextBtn" type="button" class="zh-btn zh-btn-ink zh-btn-sm">
+                            Next Problem <span class="zh-btn-arrow">→</span>
+                        </button>
+                        
+                        <button id="submitBtn" type="submit" class="zh-btn zh-btn-clay zh-btn-sm">
+                            Submit Assessment <span class="zh-btn-arrow">→</span>
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </main>
     {% endif %}
 </div>
 
-<style>
-    .question-card {
-        border: 2px solid #007bff;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .question-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    }
+<!-- Fullscreen Entry Modal Overlay (Initiates user gesture for fullscreen) -->
+<div id="fullscreenModal" style="position: fixed; inset: 0; background: rgba(30, 33, 29, 0.9); backdrop-filter: blur(12px); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px;">
+    <div class="zh-hero-card" style="max-width: 480px; width: 100%; text-align: center; border-radius: 4px; padding: clamp(28px, 4vw, 44px) clamp(20px, 3vw, 36px);">
+        <span class="eyebrow light">Proctored Examination Mode</span>
+        <h2 style="color: #ffffff; font-size: clamp(26px, 3.2vw, 36px); margin: 12px 0 16px;">Assessment <em>Ready.</em></h2>
+        <p style="font-size: 14px; line-height: 1.6; color: rgba(255, 255, 255, 0.85); margin-bottom: 28px;">
+            This evaluation session requires <strong>fullscreen mode</strong>. Navigating back or switching browser tabs will automatically submit your assessment.
+        </p>
+        <button type="button" id="startExamBtn" class="zh-btn zh-btn-primary zh-btn-lg" style="width: 100%;">
+            Enter Fullscreen & Begin <span class="zh-btn-arrow">→</span>
+        </button>
+    </div>
+</div>
 
-    .custom-option {
-        display: flex;
-        align-items: center;
-        background: #f8f9fa;
-        border: 2px solid #ddd;
-        padding: 5px;
-        margin-bottom: 7px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: 0.3s ease-in-out;
-        width: 100%;
-    }
-    .custom-option:hover {
-        border-color: #007bff;
-        background: #e9f5ff;
-    }
-    .option-circle {
-        width: 35px;
-        height: 35px;
-        line-height: 35px;
-        border: 2px solid #007bff;
-        color: #007bff;
-        text-align: center;
-        font-weight: bold;
-        border-radius: 50%;
-        margin-right: 12px;
-        font-size: 1.1rem;
-        transition: all 0.3s ease;
-    }
-    .option-input {
-        display: none;
-    }
-    .option-input:checked + .option-circle {
-        background: #28a745;
-        border-color: #28a745;
-        color: white;
-    }
-    .option-input:checked + .option-circle + .option-text {
-        font-weight: bold;
-        color: #28a745;
-    }
-
-    .bg-light {
-        border-left: 5px solid #007bff;
-        padding-left: 15px;
-    }
-
-    .btn-lg {
-        padding: 0.75rem 1.5rem;
-        font-size: 1rem;
-    }
-    .btn-primary, .btn-success, .btn-secondary {
-        border: none;
-        transition: 0.3s ease;
-    }
-    .btn-primary:hover { background: #0056d6; }
-    .btn-success:hover { background: #218838; }
-    .btn-secondary:hover { background: #495057; }
-</style>
-<!-- JavaScript for Timer and Navigation -->
 <script>
-    let totalTime = 10 * 60; // 10 minutes in seconds
-    const timerDisplay = document.getElementById('timer');
-    const form = document.getElementById('quizForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const questionCards = document.querySelectorAll('.question-card');
-    let currentQuestion = 1;
-    let timer;
+    (function () {
+        const questionCards = document.querySelectorAll('.question-card');
+        if (!questionCards.length) return;
 
-    // Function to start the timer
-    function startTimer() {
-        timer = setInterval(function () {
-            let minutes = Math.floor(totalTime / 60);
-            let seconds = totalTime % 60;
-            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        let currentQuestion = 1;
+        const totalCount = questionCards.length;
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const progressBar = document.getElementById('quizProgressBar');
+        const jumpBtns = document.querySelectorAll('.quiz-jump-pill');
+        const form = document.getElementById('quizForm');
+        const fullscreenModal = document.getElementById('fullscreenModal');
+        const startExamBtn = document.getElementById('startExamBtn');
+        const fsToggleBtn = document.getElementById('fullscreenToggleBtn');
+        const startTime = Date.now();
+        let totalTime = 10 * 60; // 10 minutes in seconds
+        const timerDisplay = document.getElementById('timer');
+        let timerInterval = null;
+        let isSubmitted = false;
 
-            if (totalTime <= 0) {
-                clearInterval(timer);
-                alert("Time is up! Submitting the quiz...");
-                form.submit();
+        // 1. Fullscreen Engine
+        function requestFullscreenMode() {
+            const el = document.documentElement;
+            if (el.requestFullscreen) {
+                el.requestFullscreen().catch(() => {});
+            } else if (el.webkitRequestFullscreen) {
+                el.webkitRequestFullscreen();
+            } else if (el.msRequestFullscreen) {
+                el.msRequestFullscreen();
             }
-            totalTime--;
-        }, 1000);
-    }
+        }
 
-    // Function to show the current question
-    function showQuestion(questionIndex) {
-        questionCards.forEach((card, index) => {
-            card.classList.toggle('d-none', index !== questionIndex - 1);
+        function startExam() {
+            requestFullscreenMode();
+            if (fullscreenModal) {
+                fullscreenModal.style.opacity = '0';
+                fullscreenModal.style.transition = 'opacity 0.25s ease';
+                setTimeout(() => {
+                    fullscreenModal.style.display = 'none';
+                }, 250);
+            }
+            startTimer();
+            showQuestion(1);
+        }
+
+        if (startExamBtn) {
+            startExamBtn.addEventListener('click', startExam);
+        }
+
+        // Clicking anywhere on initial modal backdrop also starts exam
+        if (fullscreenModal) {
+            fullscreenModal.addEventListener('click', function(e) {
+                if (e.target === fullscreenModal) {
+                    startExam();
+                }
+            });
+        }
+
+        if (fsToggleBtn) {
+            fsToggleBtn.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    requestFullscreenMode();
+                } else if (document.exitFullscreen) {
+                    document.exitFullscreen().catch(() => {});
+                }
+            });
+        }
+
+        // 2. Lockout Back Button Navigation
+        history.pushState(null, null, location.href);
+        window.addEventListener('popstate', function () {
+            history.pushState(null, null, location.href);
+            if (window.showToast) {
+                window.showToast("Navigation is locked during an active examination session.", "error");
+            }
         });
 
-        // Update navigation button visibility
-        prevBtn.classList.toggle('d-none', questionIndex === 1);
-        nextBtn.classList.toggle('d-none', questionIndex === questionCards.length);
-        submitBtn.classList.toggle('d-none', questionIndex !== questionCards.length);
-
-        checkAnswers(); // Update submit button state
-    }
-
-    // Add hidden input to store time taken
-    // form.addEventListener('submit', function () {
-    //     const hiddenInput = document.createElement("input");
-    //     hiddenInput.type = "hidden";
-    //     hiddenInput.name = "time_taken";
-
-    //     let minutes = Math.floor(totalTime / 60);
-    //     let seconds = totalTime % 60;
-    //     hiddenInput.value = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    //     form.appendChild(hiddenInput);
-
-    //     submitBtn.disabled = true;
-    //     submitBtn.innerHTML = '<i class="bi bi-arrow-repeat"></i> Submitting...';
-    //     clearInterval(timer);
-    // });
-
-
-    let startTime = Date.now(); // Capture start time when the form is initialized
-
-form.addEventListener('submit', function () {
-    const hiddenInput = document.createElement("input");
-    hiddenInput.type = "hidden";
-    hiddenInput.name = "time_taken";
-    
-    // Calculate total time spent
-    let totalTimeSpent = Math.floor((Date.now() - startTime) / 1000); // Total time in seconds
-    
-    let minutes = Math.floor(totalTimeSpent / 60);
-    let seconds = totalTimeSpent % 60;
-
-    hiddenInput.value = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    form.appendChild(hiddenInput);
-
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="bi bi-arrow-repeat"></i> Submitting...';
-
-    clearInterval(timer); // Assuming `timer` is the interval that counts down remaining time
-});
-
-
-    // Function to check if all questions are answered
-    function checkAnswers() {
-        let allAnswered = Array.from(questionCards).every(card => {
-            return card.querySelector('input[type="radio"]:checked');
+        window.addEventListener('beforeunload', function (e) {
+            if (!isSubmitted) {
+                e.preventDefault();
+                e.returnValue = 'Leaving or reloading will terminate your assessment session.';
+            }
         });
-        submitBtn.disabled = !allAnswered;
-    }
 
-    // Add event listeners to radio buttons
-    document.querySelectorAll('input[type="radio"]').forEach(function (radioButton) {
-        radioButton.addEventListener('change', checkAnswers);
-    });
-
-    // Navigation event listeners
-    function validateCurrentQuestion() {
-        let currentCard = questionCards[currentQuestion - 1];
-        let selectedOption = currentCard.querySelector('input[type="radio"]:checked');
-        let errorMessage = currentCard.querySelector('.error-message');
-
-        if (!selectedOption) {
-            if (!errorMessage) {
-                errorMessage = document.createElement('p');
-                errorMessage.className = 'error-message text-danger mt-0 mx-1 mb-0';
-                errorMessage.textContent = 'Please select an option before proceeding.';
-                currentCard.appendChild(errorMessage);
+        // 3. Tab-Switch Auto-Submit Detection
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden && !isSubmitted) {
+                isSubmitted = true;
+                if (window.showToast) {
+                    window.showToast("Tab switch violation detected. Auto-submitting evaluation...", "error");
+                }
+                submitQuiz("tab_switch");
             }
-            return false;
-        } else {
-            if (errorMessage) errorMessage.remove();
-            return true;
-        }
-    }
+        });
 
-    // Navigation event listeners
-    prevBtn.addEventListener('click', () => {
-        if (currentQuestion > 1) {
-            currentQuestion--;
-            showQuestion(currentQuestion);
-        }
-    });
+        // 4. Timer Countdown
+        function startTimer() {
+            if (timerInterval) return;
+            timerInterval = setInterval(() => {
+                const minutes = Math.floor(totalTime / 60);
+                const seconds = totalTime % 60;
+                if (timerDisplay) {
+                    timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
 
-    nextBtn.addEventListener('click', () => {
-        if (validateCurrentQuestion()) {
-            if (currentQuestion < questionCards.length) {
-                currentQuestion++;
-                showQuestion(currentQuestion);
+                if (totalTime <= 0) {
+                    clearInterval(timerInterval);
+                    if (!isSubmitted) {
+                        alert("Session time expired. Auto-submitting your answers.");
+                        submitQuiz("time_expired");
+                    }
+                }
+                totalTime--;
+            }, 1000);
+        }
+
+        // 5. Question Navigation & Display
+        function showQuestion(index) {
+            currentQuestion = index;
+            questionCards.forEach((card, i) => {
+                card.style.display = (i === index - 1) ? 'block' : 'none';
+            });
+
+            // Update Progress Bar
+            if (progressBar) {
+                progressBar.style.width = `${(index / totalCount) * 100}%`;
+            }
+
+            // Update Jump Strip active state
+            jumpBtns.forEach((btn, i) => {
+                btn.classList.toggle('active', i === index - 1);
+            });
+
+            // Prev / Next button visibility
+            if (prevBtn) {
+                prevBtn.style.display = (index === 1) ? 'none' : 'inline-flex';
+            }
+            if (nextBtn) {
+                if (index === totalCount) {
+                    nextBtn.style.display = 'none';
+                } else {
+                    nextBtn.style.display = 'inline-flex';
+                }
             }
         }
-    });
-    // Initialize quiz
-    window.onload = function () {
-        startTimer();
-        showQuestion(currentQuestion);
-    };
+
+        // Jump button click
+        jumpBtns.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const targetIdx = parseInt(btn.getAttribute('data-jump'), 10);
+                showQuestion(targetIdx);
+            });
+        });
+
+        // 6. Choice Selection on Option Click
+        document.querySelectorAll('.quiz-option-label').forEach((label) => {
+            label.addEventListener('click', function (e) {
+                // Auto request fullscreen if exited
+                if (!document.fullscreenElement) {
+                    requestFullscreenMode();
+                }
+
+                const radio = this.querySelector('input[type="radio"]');
+                if (radio) {
+                    radio.checked = true;
+
+                    // Style choices inside same question
+                    const parentStack = this.closest('.choices-stack');
+                    if (parentStack) {
+                        parentStack.querySelectorAll('.quiz-option-label').forEach(el => el.classList.remove('selected'));
+                    }
+                    this.classList.add('selected');
+
+                    // Mark jump strip pill as answered
+                    const currentCard = this.closest('.question-card');
+                    if (currentCard) {
+                        const qIdx = parseInt(currentCard.getAttribute('data-question'), 10);
+                        const jumpPill = document.querySelector(`.quiz-jump-pill[data-jump="${qIdx}"]`);
+                        if (jumpPill) {
+                            jumpPill.classList.add('answered');
+                        }
+                    }
+                }
+            });
+        });
+
+        // Navigation button listeners
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                if (currentQuestion < totalCount) {
+                    showQuestion(currentQuestion + 1);
+                }
+            });
+        }
+
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                if (currentQuestion > 1) {
+                    showQuestion(currentQuestion - 1);
+                }
+            });
+        }
+
+        // 7. Form Submission
+        function submitQuiz(reason = "") {
+            if (isSubmitted && reason === "user_click") return;
+            isSubmitted = true;
+
+            const totalTimeSpent = Math.max(1, Math.floor((Date.now() - startTime) / 1000));
+            const m = Math.floor(totalTimeSpent / 60);
+            const s = totalTimeSpent % 60;
+
+            // Append time taken hidden input
+            let hiddenInput = form.querySelector('input[name="time_taken"]');
+            if (!hiddenInput) {
+                hiddenInput = document.createElement("input");
+                hiddenInput.type = "hidden";
+                hiddenInput.name = "time_taken";
+                form.appendChild(hiddenInput);
+            }
+            hiddenInput.value = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = "Synthesizing Evaluation...";
+            }
+            if (timerInterval) clearInterval(timerInterval);
+
+            form.submit();
+        }
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            submitQuiz("user_click");
+        });
+
+        // Initialize display
+        showQuestion(1);
+    })();
 </script>
-
 {% endblock content %}
-

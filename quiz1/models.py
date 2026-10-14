@@ -66,8 +66,19 @@ class UserScore(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
     score = models.IntegerField()
+    total_questions = models.IntegerField(default=10)
     time_taken = models.DurationField()
     completed_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} - {self.quiz.title} - Score: {self.score}"
+        return f"{self.user.username} - {self.quiz.title} - Score: {self.score}/{self.total_questions}"
+
+
+class UserAnswer(models.Model):
+    user_score = models.ForeignKey(UserScore, on_delete=models.CASCADE, related_name='user_answers')
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    selected_choice = models.ForeignKey(Choice, on_delete=models.SET_NULL, null=True, blank=True)
+    is_correct = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.user_score.user.username} - Q{self.question.id} - {'Correct' if self.is_correct else 'Incorrect'}"

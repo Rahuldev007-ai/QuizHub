@@ -1,0 +1,103 @@
+{% extends "../index.html" %}
+{% load static %}
+
+{% block title %}Calibrate Item #{{ question.id }} — QuizHub Studio{% endblock title %}
+{% block meta_robots %}noindex, nofollow{% endblock meta_robots %}
+
+{% block content %}
+<section class="section-pad chapter-paper" style="padding-top: 130px; min-height: 85vh;">
+    <div class="zh-container zh-container-narrow">
+        
+        <div style="margin-bottom: 24px;">
+            <a href="{% url 'portal_dashboard' %}" class="zh-btn zh-btn-outline zh-btn-sm">
+                ← Return to Administrative Studio
+            </a>
+        </div>
+
+        <div class="section-number">
+            <span class="sn-num">01</span>
+            <span>Item Calibration / Problem #{{ question.id }}</span>
+        </div>
+
+        <div style="margin-bottom: 36px;">
+            <h1>Calibrate. <em>Problem.</em></h1>
+            <p class="lede" style="margin-top: 10px;">
+                Modify problem statement, assigned curriculum, difficulty tier, and choice answers with the verified answer key.
+            </p>
+        </div>
+
+        <div class="zh-card-light" style="padding: clamp(24px, 3.5vw, 40px); background: #ffffff;">
+            <form method="POST" action="{% url 'portal_question_edit' question.id %}">
+                {% csrf_token %}
+
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 20px;">
+                    <div>
+                        <label class="zh-label" for="qQuizSelect">Assigned Curriculum *</label>
+                        <select name="quiz" id="qQuizSelect" class="zh-select" required>
+                            {% for qz in quizzes %}
+                            <option value="{{ qz.id }}" {% if qz.id == question.quiz.id %}selected{% endif %}>
+                                {{ qz.title }} ({{ qz.category.name }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="zh-label" for="qDifficulty">Difficulty Tier</label>
+                        <select name="difficulty" id="qDifficulty" class="zh-select">
+                            <option value="easy" {% if question.difficulty == 'easy' %}selected{% endif %}>Easy</option>
+                            <option value="medium" {% if question.difficulty == 'medium' %}selected{% endif %}>Medium</option>
+                            <option value="hard" {% if question.difficulty == 'hard' %}selected{% endif %}>Hard</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <label class="zh-label" for="qText">Problem Statement *</label>
+                    <textarea name="text" id="qText" class="zh-textarea" rows="3" required style="font-size: 15.5px;">{{ question.text }}</textarea>
+                </div>
+
+                <!-- Choices Calibration Stack -->
+                <div style="margin-bottom: 28px;">
+                    <label class="zh-label" style="margin-bottom: 12px;">Calibrated Choices (Select Radio for Verified Correct Answer):</label>
+
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 4px; background: var(--chalk);">
+                            <input type="radio" name="correct_choice" value="a" id="edit_a" {% if correct_choice == 'a' %}checked{% endif %} style="cursor: pointer; accent-color: var(--olive); width: 18px; height: 18px;">
+                            <label for="edit_a" style="font-weight: 700; width: 22px; font-size: 13px;">A</label>
+                            <input type="text" name="choice_a" value="{{ choice_a }}" class="zh-input" placeholder="Choice A statement *" required style="flex: 1; background: #ffffff;">
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 4px; background: var(--chalk);">
+                            <input type="radio" name="correct_choice" value="b" id="edit_b" {% if correct_choice == 'b' %}checked{% endif %} style="cursor: pointer; accent-color: var(--olive); width: 18px; height: 18px;">
+                            <label for="edit_b" style="font-weight: 700; width: 22px; font-size: 13px;">B</label>
+                            <input type="text" name="choice_b" value="{{ choice_b }}" class="zh-input" placeholder="Choice B statement *" required style="flex: 1; background: #ffffff;">
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 4px; background: var(--chalk);">
+                            <input type="radio" name="correct_choice" value="c" id="edit_c" {% if correct_choice == 'c' %}checked{% endif %} style="cursor: pointer; accent-color: var(--olive); width: 18px; height: 18px;">
+                            <label for="edit_c" style="font-weight: 700; width: 22px; font-size: 13px;">C</label>
+                            <input type="text" name="choice_c" value="{{ choice_c }}" class="zh-input" placeholder="Choice C statement" style="flex: 1; background: #ffffff;">
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 4px; background: var(--chalk);">
+                            <input type="radio" name="correct_choice" value="d" id="edit_d" {% if correct_choice == 'd' %}checked{% endif %} style="cursor: pointer; accent-color: var(--olive); width: 18px; height: 18px;">
+                            <label for="edit_d" style="font-weight: 700; width: 22px; font-size: 13px;">D</label>
+                            <input type="text" name="choice_d" value="{{ choice_d }}" class="zh-input" placeholder="Choice D statement" style="flex: 1; background: #ffffff;">
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--line); padding-top: 20px; flex-wrap: wrap; gap: 12px;">
+                    <a href="{% url 'portal_dashboard' %}" class="zh-btn zh-btn-outline zh-btn-sm">
+                        Cancel Modifications
+                    </a>
+                    <button type="submit" class="zh-btn zh-btn-ink zh-btn-lg">
+                        Update Problem Item <span class="zh-btn-arrow">→</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</section>
+{% endblock content %}

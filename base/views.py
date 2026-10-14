@@ -62,37 +62,10 @@ def leaderboard_view(request):
 
 @login_required(login_url='login')
 def dashboard_view(request):
-
-    if request.user.is_superuser:
-
-    # Fetch top users sorted by highest score and shortest time
-        top_users = (
-            UserScore.objects.select_related('user', 'quiz')
-            .order_by('-score', 'time_taken')[:4]
-        )
-
-        quizzes = Quiz.objects.all()  # Replace with the appropriate query
-        submissions = UserScore.objects.count()
-        questions = Question.objects.count()  # Replace with the appropriate model
-        
-        user_profile = None
-        if request.user.is_authenticated:
-            user_object = get_object_or_404(User, username=request.user)
-            user_profile = get_object_or_404(Profile, user=user_object)
-            mails = ContactMessage.objects.all()
-
-        context = {
-            "top_users": top_users,
-            "quizzes": quizzes,
-            "submissions": submissions,
-            "questions": questions,
-            "user_profile": user_profile,
-            'mails': mails,
-        }
-
-        return render(request, 'dashboard.html', context)
+    if request.user.is_superuser or request.user.is_staff:
+        return redirect('portal_dashboard')
     else:
-        return HttpResponseForbidden("You do not have permission to access this page.")
+        return HttpResponseForbidden("You do not have permission to access the administrative portal.")
 
 
 def aboutUs(request):

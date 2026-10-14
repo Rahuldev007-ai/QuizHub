@@ -1,157 +1,109 @@
 {% extends "index.html" %}
+{% load static %}
+
+{% block title %}Edit Dossier — @{{ user_profile.user.username }} | QuizHub{% endblock title %}
+{% block meta_robots %}noindex, nofollow{% endblock meta_robots %}
+
 {% block content %}
-
-<h1 class="display-5 text-center my-5">Edit Profile</h1>
-
-<div class="container">
-  <div class="row justify-content-center">
-    <div class="col-lg-6 col-md-8">
-      <div class="card shadow">
-        <div class="card-header bg-primary text-white">
-          <h5 class="mb-0 text-center">Edit Your Profile</h5>
+<section class="section-pad chapter-paper" style="padding-top: 140px; min-height: 85vh;">
+    <div class="zh-container zh-container-narrow">
+        <!-- Numbered Label -->
+        <div class="section-number">
+            <span class="sn-num">01</span>
+            <span>Profile Configuration / Dossier Updates</span>
         </div>
-        <div class="card-body p-4">
-          <form action="" method="POST" enctype="multipart/form-data" id="editProfileForm" novalidate>
-            {% csrf_token %}
 
-            <!-- Profile Picture -->
-            <div class="mb-3 text-center">
-              <label class="form-label d-block">
-                <i class="fas fa-image"></i> Profile Image
-              </label>
-
-
-            {% if user_profile.profile_img and user_profile.profile_img.url %}
-                <img id="imagePreview" src="{{ user_profile.profile_img.url }}" 
-                     class="img-thumbnail rounded-circle shadow-sm mb-2 object-fit-cover"  
-                     style="width: 150px; height: 150px; object-fit: cover;">
-            {% else %}
-                <img id="imagePreview" src="/static/images/user.png" 
-                     class="img-thumbnail rounded-circle shadow-sm mb-2 object-fit-cover"  
-                     style="width: 150px; height: 150px; object-fit: cover;">
-            {% endif %}
-              
-              <div class="d-flex justify-content-between align-items-center">
-                <input type="file" name="image" class="form-control me-2" id="exampleInputImage" accept="image/jpeg, image/png" style="width: 75%;">
-                <button type="button" class="btn btn-danger btn-sm" id="removeImage">Remove</button>
-              </div>
-
-              <input type="hidden" name="remove_image" id="removeImageInput" value="0">
-              <small class="text-danger d-none" id="imageError"></small>
-            </div>
-
-            <!-- Location -->
-            <div class="mb-3">
-              <label class="form-label">
-                <i class="fas fa-map-marker-alt"></i> Location
-              </label>
-              <input type="text" name="location" value="{{ user_profile.location }}" class="form-control" id="exampleInputLocation" placeholder="Location" minlength="3" maxlength="20">
-              <small class="text-danger d-none" id="locationError"></small>
-            </div>
-
-            <!-- Bio -->
-            <div class="mb-3">
-              <label class="form-label">
-                <i class="fas fa-info-circle"></i> Your Bio
-              </label>
-              <textarea class="form-control" name="bio" id="exampleFormControlTextarea1" rows="3" placeholder="Your Bio" minlength="3" maxlength="150">{{ user_profile.bio }}</textarea>
-              <small class="text-danger d-none" id="bioError"></small>
-            </div>
-
-            <!-- Save Button -->
-            <div class="card-footer text-center">
-              <button type="submit" class="btn btn-success w-50">
-                <i class="fas fa-save"></i> Save
-              </button>
-            </div>
-          </form>
+        <div style="margin-bottom: 40px;" class="reveal">
+            <h1>Edit. <em>Scholar record.</em></h1>
+            <p class="lede" style="margin-top: 14px;">
+                Update your academic representation, avatar image, jurisdiction, and curriculum bio.
+            </p>
         </div>
-      </div>
+
+        <div class="zh-card-light reveal" style="max-width: 640px; margin: 0 auto; padding: clamp(28px, 4vw, 48px); background: var(--chalk);">
+            <form action="{% url 'editProfile' %}" method="POST" enctype="multipart/form-data" id="editProfileForm">
+                {% csrf_token %}
+
+                <!-- Profile Image Preview & Control -->
+                <div style="text-align: center; margin-bottom: 36px; padding-bottom: 30px; border-bottom: 1px solid var(--line);">
+                    <div style="margin-bottom: 16px;">
+                        {% if user_profile.profile_img and user_profile.profile_img.url %}
+                        <img id="imagePreview" src="{{ user_profile.profile_img.url }}" 
+                             alt="Profile image" 
+                             style="width: 130px; height: 130px; border-radius: 50%; object-fit: cover; margin: 0 auto; border: 2px solid var(--line);">
+                        {% else %}
+                        <img id="imagePreview" src="{% static 'images/user.png' %}" 
+                             alt="Default avatar" 
+                             style="width: 130px; height: 130px; border-radius: 50%; object-fit: cover; margin: 0 auto; border: 2px solid var(--line);">
+                        {% endif %}
+                    </div>
+
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 14px; flex-wrap: wrap; max-width: 400px; margin: 0 auto;">
+                        <input type="file" name="image" id="exampleInputImage" accept="image/jpeg, image/png, image/webp" 
+                               style="font-size: 13px; font-family: var(--sans);">
+                        <button type="button" class="zh-btn zh-btn-outline zh-btn-sm" id="removeImage" style="color: var(--clay); border-color: var(--clay);">
+                            Remove Image
+                        </button>
+                    </div>
+                    <input type="hidden" name="remove_image" id="removeImageInput" value="0">
+                </div>
+
+                <!-- Location -->
+                <div class="zh-field">
+                    <label for="exampleInputLocation" class="zh-label">Location / Jurisdiction</label>
+                    <input type="text" name="location" id="exampleInputLocation" class="zh-input" 
+                           value="{{ user_profile.location|default:'' }}" placeholder="e.g. Oxford, UK or Melbourne, AU" minlength="3" maxlength="30">
+                </div>
+
+                <!-- Bio -->
+                <div class="zh-field">
+                    <label for="exampleFormControlTextarea1" class="zh-label">Curriculum Bio & Research Interests</label>
+                    <textarea name="bio" id="exampleFormControlTextarea1" class="zh-textarea" 
+                              placeholder="Brief summary of your technical focus, languages mastered, or academic background..." 
+                              minlength="3" maxlength="250">{{ user_profile.bio|default:'' }}</textarea>
+                    <span style="font-size: 11px; opacity: 0.55; display: block; margin-top: 6px;">Max. 250 characters.</span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--line);">
+                    <a href="{% url 'profile' user_profile.user.username %}" class="zh-btn zh-btn-outline">
+                        ← Cancel
+                    </a>
+                    <button type="submit" class="zh-btn zh-btn-ink">
+                        Save Changes <span class="zh-btn-arrow">→</span>
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-  </div>
-</div>
+</section>
 
-<!-- JavaScript -->
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('editProfileForm');
-    const locationInput = document.getElementById('exampleInputLocation');
-    const bioInput = document.getElementById('exampleFormControlTextarea1');
-    const imageInput = document.getElementById('exampleInputImage');
-    const imagePreview = document.getElementById('imagePreview');
-    const removeImageButton = document.getElementById('removeImage');
-    const removeImageInput = document.getElementById('removeImageInput');
+    document.addEventListener('DOMContentLoaded', function () {
+        const imageInput = document.getElementById('exampleInputImage');
+        const imagePreview = document.getElementById('imagePreview');
+        const removeImageBtn = document.getElementById('removeImage');
+        const removeImageInput = document.getElementById('removeImageInput');
 
-    const defaultImage = "/static/images/user.png"; // Path to default image
-
-    function showError(input, errorElement, message) {
-      if (message) {
-        errorElement.textContent = message;
-        errorElement.classList.remove('d-none');
-        input.classList.add('is-invalid');
-      } else {
-        errorElement.textContent = '';
-        errorElement.classList.add('d-none');
-        input.classList.remove('is-invalid');
-      }
-    }
-
-    // Validate Location
-    locationInput.addEventListener('blur', function () {
-      showError(locationInput, document.getElementById('locationError'), locationInput.value.trim().length < 3 ? 'Location must be at least 3 characters.' : '');
-    });
-
-    // Validate Bio
-    bioInput.addEventListener('blur', function () {
-      showError(bioInput, document.getElementById('bioError'), bioInput.value.trim().length < 3 ? 'Bio must be at least 3 characters.' : '');
-    });
-
-    // Image Preview and Validation
-    imageInput.addEventListener('change', function () {
-      const file = imageInput.files[0];
-      if (file) {
-        const validImageTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-        if (!validImageTypes.includes(file.type)) {
-          showError(imageInput, document.getElementById('imageError'), 'Invalid image format. Only JPG and PNG are allowed.');
-          imageInput.value = '';
-        } else {
-          showError(imageInput, document.getElementById('imageError'), '');
-          const reader = new FileReader();
-          reader.onload = function (e) {
-            imagePreview.src = e.target.result;
-          };
-          reader.readAsDataURL(file);
-          removeImageInput.value = '0'; // Reset remove flag
+        if (imageInput) {
+            imageInput.addEventListener('change', function () {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        imagePreview.src = e.target.result;
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                    removeImageInput.value = "0";
+                }
+            });
         }
-      }
+
+        if (removeImageBtn) {
+            removeImageBtn.addEventListener('click', function () {
+                imagePreview.src = "{% static 'images/user.png' %}";
+                removeImageInput.value = "1";
+                if (imageInput) imageInput.value = "";
+            });
+        }
     });
-
-    // Remove Image Functionality
-    removeImageButton.addEventListener('click', function () {
-      imagePreview.src = defaultImage;  // Set default image
-      imageInput.value = '';  // Clear file input
-      removeImageInput.value = '1';  // Set flag to remove image
-    });
-
-    // Form Validation on Submit
-    form.addEventListener('submit', function (e) {
-      let isValid = true;
-
-      if (locationInput.value.trim().length < 3) {
-        showError(locationInput, document.getElementById('locationError'), 'Location must be at least 3 characters.');
-        isValid = false;
-      }
-
-      if (bioInput.value.trim().length < 3) {
-        showError(bioInput, document.getElementById('bioError'), 'Bio must be at least 3 characters.');
-        isValid = false;
-      }
-
-      if (!isValid) {
-        e.preventDefault();
-      }
-    });
-  });
 </script>
-
 {% endblock content %}

@@ -1,58 +1,108 @@
 {% extends "index.html" %}
-  {%block content%}
-    <h1 class="display-4 text-center my-5">@{{ user_profile.user.username }}'s Profile</h1>
-    {% if messages %}
-    <div id="success-message" class="alert alert-success text-center" style="font-size: 1.5rem; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1050;">
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    </div>
-{% endif %}
-    
-    <div class="container text-center">
-        <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-            {% if request.user.username == user_profile.user.username %}
-            <a href="{% url 'editProfile' %}" class="btn btn-outline-primary">Edit Profile</a>
-            <a href="{% url 'deleteProfile' %}" class="btn btn-outline-danger">Delete Profile</a>
-            {% endif %}
-           </div>
+{% load static %}
 
-        <div class="container text-center my-4">
-            <div class="row row-cols-sm-1 row-cols-md-2">
-                <div class="col-12">
-                    <img src="{{ user_profile.profile_img.url }}" class='rounded-circle'alt="user-profile" width="150" height="150">
-                    <h2 class="fs-3">@{{ user_profile.user.username }}</h2>
+{% block title %}@{{ user_profile.user.username }} — Scholar Profile | QuizHub{% endblock title %}
+{% block meta_robots %}noindex, nofollow{% endblock meta_robots %}
+
+{% block content %}
+<section class="section-pad chapter-paper" style="padding-top: 140px; min-height: 85vh;">
+    <div class="zh-container zh-container-narrow">
+        <!-- Numbered Label -->
+        <div class="section-number">
+            <span class="sn-num">01</span>
+            <span>Scholar Dossier / Verified Credentials</span>
+        </div>
+
+        {% if messages %}
+        <div style="margin-bottom: 30px; padding: 14px 18px; background: rgba(98, 104, 82, 0.15); border: 1px solid var(--olive); color: var(--ink); font-size: 14px;">
+            {% for message in messages %}
+                <div>{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="zh-card-light reveal" style="padding: clamp(32px, 5vw, 56px); margin-bottom: 40px;">
+            <div style="display: flex; gap: clamp(24px, 4vw, 44px); align-items: flex-start; flex-wrap: wrap;">
+                <!-- Profile Avatar -->
+                <div style="flex-shrink: 0;">
+                    {% if user_profile.profile_img and user_profile.profile_img.url %}
+                    <img src="{{ user_profile.profile_img.url }}" 
+                         alt="{{ user_profile.user.username }}" 
+                         style="width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 2px solid var(--line);">
+                    {% else %}
+                    <div style="width: 140px; height: 140px; border-radius: 50%; background: var(--ink); color: #ffffff; display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 54px;">
+                        {{ user_profile.user.username|slice:":1"|upper }}
+                    </div>
+                    {% endif %}
                 </div>
-                <div class="col-12">
-                    <h2> Username is                        
-                    </i>@{{ user_profile.user.username|title }}
-                    </h2>
-                    <h4>{{user_profile.user.first_name | default:"full_name"}} {{user_profile.user.last_name | default:" is not available"}}</h4>
-                    <p class="fs-5"><i class="fa fa-venus"></i> {{ user_profile.gender | default:"Gender not available" }}.</p>
-                    <p class="fs-5"><i class="fa fa-map-marker" aria-hidden="true"></i> {{ user_profile.location | default:"Location not available" }}.</p>
-                    <p class="fs-5"><i class="fa fa-info-circle" aria-hidden="true"></i> {{ user_profile.bio | default:"Bio not available" }}.</p>
+
+                <!-- Info Stack -->
+                <div style="flex: 1; min-width: 240px;">
+                    <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 14px; margin-bottom: 12px;">
+                        <div>
+                            <span class="eyebrow" style="margin: 0; padding: 0; border: none; color: var(--ochre);">
+                                Scholar Record
+                            </span>
+                            <h2 style="font-size: clamp(32px, 4vw, 50px); line-height: 1; margin: 8px 0;">
+                                @{{ user_profile.user.username }}
+                            </h2>
+                            <p style="font-size: 16px; opacity: 0.75; margin: 0;">
+                                {{ user_profile.user.first_name|default:"" }} {{ user_profile.user.last_name|default:"" }}
+                            </p>
+                        </div>
+
+                        {% if request.user.username == user_profile.user.username %}
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <a href="{% url 'my_quizzes' %}" class="zh-btn zh-btn-outline zh-btn-sm">
+                                My Assessments
+                            </a>
+                            <a href="{% url 'editProfile' %}" class="zh-btn zh-btn-ink zh-btn-sm">
+                                Edit Dossier <span class="zh-btn-arrow">→</span>
+                            </a>
+                            <a href="{% url 'deleteProfile' %}" class="zh-btn zh-btn-outline zh-btn-sm" style="color: var(--clay); border-color: var(--clay);">
+                                Terminate
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Metadata List -->
+                    <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line);">
+                        <ul class="zh-list-editorial">
+                            <li>
+                                <span>Gender Designation</span>
+                                <span class="metric">{{ user_profile.gender|default:"Unspecified" }}</span>
+                            </li>
+                            <li>
+                                <span>Location / Jurisdiction</span>
+                                <span class="metric">{{ user_profile.location|default:"Not specified" }}</span>
+                            </li>
+                            <li>
+                                <span>Curriculum Bio</span>
+                                <span style="font-size: 14px; opacity: 0.85; max-width: 380px; text-align: right;">
+                                    {{ user_profile.bio|default:"No curriculum bio provided." }}
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <hr class="my-5">
+        <!-- Call to action block -->
+        <div class="zh-split-grid reveal" style="align-items: center;">
+            <div>
+                <h3>Ready to record an <em>evaluation?</em></h3>
+                <p style="font-size: 14px; opacity: 0.75; margin-top: 8px;">
+                    Test your current retention across active curricula modules.
+                </p>
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+                <a href="{% url 'all_quiz' %}" class="zh-btn zh-btn-ink">
+                    Explore Available Quizzes <span class="zh-btn-arrow">→</span>
+                </a>
+            </div>
+        </div>
     </div>
-    
-    <script>
-        // Function to show the success message
-        function showSuccessMessage() {
-            const messageElement = document.getElementById('success-message');
-            messageElement.style.display = 'block'; // Show the message
-            setTimeout(() => {
-                messageElement.style.display = 'none'; // Hide the message after 5 seconds
-            }, 2000);
-        }
-    
-        // Call this function when the page loads or after form submission
-        document.addEventListener('DOMContentLoaded', () => {
-            // Simulate triggering the success message
-            showSuccessMessage();
-        });
-    </script>
-    
-    {%endblock content%}
+</section>
+{% endblock content %}

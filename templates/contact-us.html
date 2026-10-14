@@ -1,99 +1,85 @@
 {% extends "index.html" %}
+{% load static %}
+
+{% block title %}Feedback & Inquiries — Academic Dialogue | QuizHub{% endblock title %}
+{% block meta_description %}Submit your technical inquiries, curriculum feedback, or partner requests directly to the QuizHub editorial board.{% endblock meta_description %}
+
 {% block content %}
+<section class="section-pad chapter-paper" style="padding-top: 140px; min-height: 85vh;">
+    <div class="zh-container zh-container-narrow">
+        <!-- Numbered Label -->
+        <div class="section-number">
+            <span class="sn-num">01</span>
+            <span>Transmission / Editorial Feedback & Direct Inquiries</span>
+        </div>
 
-<h1 class="display-4 text-center my-5 text-primary">feedback</h1>
+        <div style="margin-bottom: 50px;" class="reveal">
+            <h1>Academic. <em>Dialogue.</em></h1>
+            <p class="lede" style="max-width: 600px; margin-top: 20px;">
+                We invite constructive feedback regarding question calibration, syllabus suggestions, or platform technical observations.
+            </p>
+        </div>
 
-<main>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <!-- Contact Form -->
-                <form id="contactForm" action="#" method="post" class="contact-form shadow p-4 rounded bg-light">
+        <div class="zh-split-grid" style="align-items: flex-start;">
+            <!-- Left Info Block -->
+            <div class="reveal">
+                <span class="eyebrow">Transmission Directives</span>
+                <h3 style="font-size: 26px; margin-bottom: 18px;">Editorial Response Desk</h3>
+                <p style="font-size: 14.5px; line-height: 1.7; color: rgba(30, 33, 29, 0.8);">
+                    All messages are delivered directly to the administrative oversight panel. Please provide specific question numbers or module titles when reporting edge-case ambiguity.
+                </p>
+
+                <div style="margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--line);">
+                    <ul class="zh-list-editorial">
+                        <li>
+                            <span>Authenticated Scholar</span>
+                            <span class="metric">@{{ user.username }}</span>
+                        </li>
+                        <li>
+                            <span>Response Latency</span>
+                            <span class="metric">Within 24 Hours</span>
+                        </li>
+                        <li>
+                            <span>Encryption Standard</span>
+                            <span class="metric">TLS 1.3 Verified</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Right Contact Form Card (Chalk Card) -->
+            <div class="zh-card-light reveal" style="padding: clamp(28px, 4vw, 44px); background: var(--chalk); border-radius: 4px;">
+                <form id="contactForm" action="{% url 'contactUs' %}" method="POST">
                     {% csrf_token %}
-                    
-                    <!-- Username Field -->
-                    <div class="form-group mb-4">
-                        <label for="username" class="font-weight-bold">Username</label>
-                        <input type="text" id="username" name="username" 
-                               value="{{ user.username }}" 
-                               class="form-control" disabled>
+
+                    <div class="zh-field">
+                        <label for="username" class="zh-label">Transmitting Scholar</label>
+                        <input type="text" id="username" class="zh-input" value="@{{ user.username }}" disabled style="opacity: 0.6; cursor: not-allowed;">
                     </div>
 
-                    <!-- Subject Field -->
-                    <div class="form-group mb-4">
-                        <label for="subject" class="font-weight-bold">Subject</label>
-                        <input type="text" id="subject" name="subject" 
-                               class="form-control" minlength="3" maxlength="50" required>
-                        <small id="subjectHelp" class="form-text text-muted">Subject must be at least 3 characters.</small>
+                    <div class="zh-field">
+                        <label for="subject" class="zh-label">Subject of Transmission</label>
+                        <input type="text" id="subject" name="subject" class="zh-input" 
+                               placeholder="e.g. Feedback on Question #42 in Python Module" minlength="3" maxlength="50" required>
+                        <span style="font-size: 11px; opacity: 0.55; display: block; margin-top: 6px;">Minimum 3 characters</span>
                     </div>
 
-                    <!-- Message Field -->
-                    <div class="form-group mb-4">
-                        <label for="message" class="font-weight-bold">Message</label>
-                        <textarea id="message" name="message" rows="5" 
-                                  class="form-control" minlength="10" maxlength="100" required></textarea>
-                        <small id="messageHelp" class="form-text text-muted">Message must be at least 10 characters.</small>
+                    <div class="zh-field">
+                        <label for="message" class="zh-label">Observation or Note</label>
+                        <textarea id="message" name="message" class="zh-textarea" rows="5" 
+                                  placeholder="Provide your specific commentary, recommendation, or inquiry..." 
+                                  minlength="10" maxlength="300" required></textarea>
+                        <span style="font-size: 11px; opacity: 0.55; display: block; margin-top: 6px;">Minimum 10 characters</span>
                     </div>
 
-                    <!-- Submit Button -->
-                    <button type="submit" class="btn btn-primary btn-block btn-lg">Send Message</button>
+                    <div style="margin-top: 30px;">
+                        <button type="submit" class="zh-btn zh-btn-ink" style="width: 100%; height: 50px;">
+                            Transmit Message <span class="zh-btn-arrow">→</span>
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
-</main>
-
-<!-- JavaScript for Validation -->
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const form = document.getElementById('contactForm');
-
-        form.addEventListener('submit', function(event) {
-            const subject = document.getElementById('subject');
-            const message = document.getElementById('message');
-            let isValid = true;
-
-            // Clear existing error styles
-            subject.classList.remove('is-invalid');
-            message.classList.remove('is-invalid');
-
-            // Validate Subject (Minimum 3 characters)
-            if (subject.value.trim().length < 3) {
-                isValid = false;
-                subject.classList.add('is-invalid');
-                event.preventDefault(); // Prevent form submission
-                subject.focus();
-                return;
-            }
-
-            // Validate Message (Minimum 10 characters)
-            if (message.value.trim().length < 10) {
-                isValid = false;
-                message.classList.add('is-invalid');
-                event.preventDefault(); // Prevent form submission
-                message.focus();
-                return;
-            }
-
-            // If all validations pass, the form can be submitted
-        });
-    });
-</script>
-
-<style>
-    /* Custom Styles */
-    .contact-form {
-        background-color: white;
-        border-radius: 10px;
-    }
-
-    .form-control.is-invalid {
-        border-color: #dc3545;
-    }
-
-    .form-control.is-invalid:focus {
-        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
-    }
-</style>
-
+</section>
 {% endblock content %}

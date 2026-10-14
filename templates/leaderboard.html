@@ -1,140 +1,90 @@
 {% extends "./index.html" %}
+{% load static %}
+
+{% block title %}Global Merit Leaderboard — QuizHub{% endblock title %}
+{% block meta_description %}View the official merit rankings, high scores, and completion times of technical scholars on QuizHub.{% endblock meta_description %}
+
 {% block content %}
-
-<div class="container my-5">
-    <h1 class="display-4 text-center fw-bold text-primary">Leaderboard</h1>
-
-    <!-- Table Header -->
-    <div class="leaderboard-header">
-        <div class="col-name">NAME</div>
-        <div class="col-score">SCORE</div>
-        <div class="col-quiz">CODING QUIZ</div>
-        <div class="col-time">TIME</div>
-        <div class="col-rank">RANK</div>
-    </div>
-
-    <!-- Leaderboard Rows -->
-    <div class="leaderboard">
-        {% for user_score in leaderboard_user %}
-        <div class="leaderboard-row" style="background: linear-gradient(135deg, {{ user_score.color1 }}, {{ user_score.color2 }});">
-            
-            <!-- Profile Image & Name -->
-            <div class="col-name">
-                <a href="{% url 'profile' user_score.user.username %}" class="profile-link">
-                    <img src="{{ user_score.user.profile.profile_img.url|default:'static/images/user.png' }}" alt="Profile">
-                </a>
-                <div>
-                    <a href="{% url 'profile' user_score.user.username %}" class="name-link">
-                        <h5 class="name-text">@{{ user_score.user.username }}</h5>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Score -->
-            <div class="col-score">
-                <p class="score-text">{{ user_score.score }}</p>
-            </div>
-
-            <!-- Coding Quiz Title -->
-            <div class="col-quiz">
-                <p class="quiz-text ">{{ user_score.quiz.title|truncatewords:10 }}</p>
-            </div>
-
-            <!-- Time Taken -->
-            <div class="col-time">
-                <p class="time-text">{{ user_score.time_taken }}</p>
-            </div>
-
-            <!-- Rank -->
-            <div class="col-rank">
-                <strong class="rank-text">{{ forloop.counter|stringformat:"03d" }}</strong>
-            </div>
-
+<section class="section-pad chapter-paper" style="padding-top: 130px;">
+    <div class="zh-container">
+        <!-- Numbered Section Label -->
+        <div class="section-number">
+            <span class="sn-num">01</span>
+            <span>Index of Distinction / Global Rankings</span>
         </div>
-        {% endfor %}
+
+        <div style="margin-bottom: 50px;" class="reveal">
+            <h1>The Global. <em>Merit roster.</em></h1>
+            <p class="lede" style="max-width: 600px; margin-top: 20px;">
+                Scholars ranked by verified score accuracy and lowest elapsed solution latency. Calculated across all official modules.
+            </p>
+        </div>
+
+        <!-- Leaderboard Table Card -->
+        <div class="zh-card-light reveal" style="padding: 0; overflow-x: auto;">
+            <table class="zh-table">
+                <thead>
+                    <tr>
+                        <th style="width: 100px;">Rank</th>
+                        <th>Scholar</th>
+                        <th>Assessment Module</th>
+                        <th style="text-align: right;">Time Elapsed</th>
+                        <th style="text-align: right;">Verified Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user_score in leaderboard_user %}
+                    <tr>
+                        <td class="zh-rank-num" style="color: {% if forloop.counter == 1 %}var(--ochre){% elif forloop.counter == 2 %}#8f9489{% elif forloop.counter == 3 %}var(--clay){% else %}inherit{% endif %};">
+                            #{{ forloop.counter|stringformat:"02d" }}
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 14px;">
+                                {% if user_score.user.profile.profile_img %}
+                                <img src="{{ user_score.user.profile.profile_img.url }}" 
+                                     alt="{{ user_score.user.username }}" 
+                                     style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1px solid var(--line);">
+                                {% else %}
+                                <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--ink); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500;">
+                                    {{ user_score.user.username|slice:":1"|upper }}
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <a href="{% url 'profile' user_score.user.username %}" style="font-weight: 500; text-decoration: underline; text-underline-offset: 4px;">
+                                        @{{ user_score.user.username }}
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="color: rgba(30, 33, 29, 0.75);">
+                            {{ user_score.quiz.title|default:"Standard Technical Quiz" }}
+                        </td>
+                        <td style="text-align: right; font-size: 14px; opacity: 0.75; font-variant-numeric: tabular-nums;">
+                            {{ user_score.time_taken|default:"00:00" }}
+                        </td>
+                        <td style="text-align: right; font-family: var(--serif); font-size: 24px; font-weight: 500;">
+                            {{ user_score.score }} <span style="font-size: 13px; opacity: 0.5;">pts</span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 60px 20px; color: rgba(30, 33, 29, 0.6);">
+                            No evaluation records currently published. Complete an assessment to place your name on the merit roster.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;" class="reveal">
+            <p style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; margin: 0;">
+                Calculated dynamically via timestamp analysis and verified answers
+            </p>
+            <a href="{% url 'all_quiz' %}" class="zh-btn zh-btn-ink">
+                Start a New Assessment <span class="zh-btn-arrow">→</span>
+            </a>
+        </div>
     </div>
-</div>
-<style type="text/css">
-    /* Leaderboard Header */
-.leaderboard-header {
-    display: flex;
-    justify-content: space-between;
-    background: black;
-    color: white;
-    font-weight: bold;
-    padding: 15px;
-    border-radius: 20px;
-    text-align: center;
-}
-
-/* Leaderboard Row */
-.leaderboard-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    margin: 10px 0;
-    border-radius: 20px;
-    color: white;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 3px solid black;
-}
-
-.leaderboard-row:hover {
-    transform: scale(1.03);
-    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.3);
-}
-
-/* Column Styles */
-.col-name, .col-score, .col-quiz, .col-time, .col-rank {
-    flex: 1;
-    text-align: center;
-    font-weight: bold;
-}
-
-/* Profile Image */
-.col-name {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.col-name img {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    margin-right: 15px;
-    border: 4px solid black;
-}
-
-/* Text Styling */
-.name-text, .score-text, .quiz-text, .time-text, .rank-text {
-    color: black;  /* Ensure text is visible */
-}
-.quiz-text
-{
-    text-truncate:10;
-}
-
-/* Rank Styling */
-.col-rank strong {
-    font-size: 22px;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 10px 20px;
-    border-radius: 10px;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .leaderboard-header, .leaderboard-row {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .col-name {
-        justify-content: center;
-    }
-}
-
-</style>
-{% endblock %}
+</section>
+{% endblock content %}

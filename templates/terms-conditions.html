@@ -1,45 +1,91 @@
 {% extends "index.html" %}
+{% load static %}
+
+{% block title %}Terms & Code of Honor — QuizHub Standards{% endblock title %}
+{% block meta_description %}Review QuizHub's terms of service, intellectual property guidelines, and academic code of honor.{% endblock meta_description %}
+
 {% block content %}
-    <!-- Page Title -->
-    <h1 class="display-4 text-center my-5">Terms & Conditions</h1>
-
-    <!-- Main Content -->
-    <main>
-        <div class="container col-md-8 col-sm-12">
-            <h2><i class="bi bi-info-circle-fill me-2"></i>1. Introduction</h2>
-            <p>Welcome to QuizHub. By accessing and using this web app, you accept and agree to be bound by these
-                terms and conditions. If you do not agree with any part of these terms, please do not use the app.</p>
-
-            <h2><i class="bi bi-person-fill me-2"></i>2. User Accounts</h2>
-            <p>2.1 To access certain features of the app, you may need to create a user account.<br>
-                2.2 You are responsible for maintaining the confidentiality of your account credentials and for all
-                activities that occur under your account.<br>
-                2.3 You must be at least 13 years old to use this app.</p>
-
-            <h2><i class="bi bi-card-text me-2"></i>3. Content</h2>
-            <p>3.1 QuizHub may include user-generated content, including quiz questions and answers.<br>
-                3.2 You agree not to upload, post, or transmit any content that is offensive, harmful, or violates any
-                third-party rights.<br>
-                3.3 QuizHub reserves the right to remove any content that violates these terms without prior notice.
-            </p>
-
-            <h2><i class="bi bi-lightbulb-fill me-2"></i>4. Intellectual Property</h2>
-            <p>4.1 All intellectual property rights in the app, including quizzes and content, are owned by QuizHub
-                or its licensors.<br>
-                4.2 You may not use, reproduce, or distribute any content from the app without obtaining permission from
-                the respective owners.</p>
-
-            <h2><i class="bi bi-shield-fill-exclamation me-2"></i>5. Disclaimer</h2>
-            <p>5.1 QuizHub provides the app on an "as-is" basis, without warranties of any kind.<br>
-                5.2 We do not guarantee the accuracy, completeness, or reliability of the content.<br>
-                5.3 Your use of the app is at your own risk, and QuizHub will not be liable for any damages arising
-                from your use of the app.</p>
-
-            <h2><i class="bi bi-gear-fill me-2"></i>6. Changes to Terms</h2>
-            <p>6.1 QuizHub reserves the right to modify these terms and conditions at any time.<br>
-                6.2 Any changes will be effective immediately upon posting on this page.<br>
-                6.3 Your continued use of the app after changes are made constitutes acceptance of the updated terms.</p>
+<section class="section-pad chapter-paper" style="padding-top: 140px;">
+    <div class="zh-container zh-container-narrow">
+        <!-- Numbered Label -->
+        <div class="section-number">
+            <span class="sn-num">01</span>
+            <span>Codex / Terms of Service & Code of Honor</span>
         </div>
-    </main>
-    {% endblock content %}
 
+        <div style="margin-bottom: 60px;" class="reveal">
+            <h1>Terms. <em>Honor code.</em></h1>
+            <p class="lede" style="margin-top: 20px;">
+                Governing standards of participation, intellectual integrity, and community conduct across the QuizHub evaluation ecosystem.
+            </p>
+        </div>
+
+        <div class="zh-card-light reveal" style="padding: clamp(32px, 5vw, 60px); background: var(--chalk);">
+            <!-- Section 1 -->
+            <div style="margin-bottom: 40px; padding-bottom: 30px; border-bottom: 1px solid var(--line);">
+                <span class="eyebrow" style="color: var(--ochre);">Section 01</span>
+                <h3 style="font-size: 24px; margin: 8px 0 16px;">1. Introduction & Acceptance</h3>
+                <p style="font-size: 15px; line-height: 1.75; color: rgba(30, 33, 29, 0.8);">
+                    Welcome to QuizHub. By accessing and navigating this evaluation platform, you acknowledge and agree to be bound unconditionally by these terms, conditions, and our academic honor code. If you do not align with any portion of these principles, you are advised to refrain from using the platform.
+                </p>
+            </div>
+
+            <!-- Section 2 -->
+            <div style="margin-bottom: 40px; padding-bottom: 30px; border-bottom: 1px solid var(--line);">
+                <span class="eyebrow" style="color: var(--ochre);">Section 02</span>
+                <h3 style="font-size: 24px; margin: 8px 0 16px;">2. Scholar Account Integrity</h3>
+                <p style="font-size: 15px; line-height: 1.75; color: rgba(30, 33, 29, 0.8);">
+                    <strong>2.1</strong> Creation of an individual scholar account is required to participate in official evaluations and be indexed on the global merit leaderboard.<br>
+                    <strong>2.2</strong> You bear singular responsibility for safeguarding your authentication credentials and for all assessment actions recorded under your profile.<br>
+                    <strong>2.3</strong> Participants must be at least 13 years of age, or have attained legal digital consent in their jurisdiction.
+                </p>
+            </div>
+
+            <!-- Section 3 -->
+            <div style="margin-bottom: 40px; padding-bottom: 30px; border-bottom: 1px solid var(--line);">
+                <span class="eyebrow" style="color: var(--ochre);">Section 03</span>
+                <h3 style="font-size: 24px; margin: 8px 0 16px;">3. Question Content & Intellectual Integrity</h3>
+                <p style="font-size: 15px; line-height: 1.75; color: rgba(30, 33, 29, 0.8);">
+                    <strong>3.1</strong> All evaluation materials, test cases, and question formulations are calibrated for academic inquiry.<br>
+                    <strong>3.2</strong> The deployment of automated scraping bots, prompt injection tools, or unauthorized session replay scripts is strictly prohibited.<br>
+                    <strong>3.3</strong> QuizHub reserves the right to annul verified scores obtained via disingenuous automated means without prior notice.
+                </p>
+            </div>
+
+            <!-- Section 4 -->
+            <div style="margin-bottom: 40px; padding-bottom: 30px; border-bottom: 1px solid var(--line);">
+                <span class="eyebrow" style="color: var(--ochre);">Section 04</span>
+                <h3 style="font-size: 24px; margin: 8px 0 16px;">4. Intellectual Property Rights</h3>
+                <p style="font-size: 15px; line-height: 1.75; color: rgba(30, 33, 29, 0.8);">
+                    <strong>4.1</strong> All curriculum structures, visual design languages, design tokens, and technical question repositories remain the exclusive intellectual property of QuizHub and its academic contributors.<br>
+                    <strong>4.2</strong> Reproduction, redistribution, or mirroring of quiz content for commercial syndication is prohibited without express written authorization.
+                </p>
+            </div>
+
+            <!-- Section 5 -->
+            <div style="margin-bottom: 40px; padding-bottom: 30px; border-bottom: 1px solid var(--line);">
+                <span class="eyebrow" style="color: var(--ochre);">Section 05</span>
+                <h3 style="font-size: 24px; margin: 8px 0 16px;">5. Limitation of Liability & Warranty</h3>
+                <p style="font-size: 15px; line-height: 1.75; color: rgba(30, 33, 29, 0.8);">
+                    QuizHub provides this evaluation interface on an "as is" and "as available" basis. While we strive for absolute empirical precision, we make no express warranties regarding uninterrupted availability or error-free scoring.
+                </p>
+            </div>
+
+            <!-- Section 6 -->
+            <div>
+                <span class="eyebrow" style="color: var(--ochre);">Section 06</span>
+                <h3 style="font-size: 24px; margin: 8px 0 16px;">6. Amendments to the Codex</h3>
+                <p style="font-size: 15px; line-height: 1.75; color: rgba(30, 33, 29, 0.8); margin-bottom: 0;">
+                    We reserve the authority to update or refine these provisions periodically. Revisions take immediate legal effect upon publication to this URL. Continued participation denotes active acceptance.
+                </p>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px; text-align: center;" class="reveal">
+            <a href="{% url 'contactUs' %}" class="zh-btn zh-btn-outline">
+                Inquire Concerning Standards <span class="zh-btn-arrow">→</span>
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock content %}

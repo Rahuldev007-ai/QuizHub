@@ -1,0 +1,32 @@
+{% extends "./index.html" %}
+{% load static %}
+
+{% block title %}404 — Page Not Found | QuizHub{% endblock title %}
+{% block meta_robots %}noindex, nofollow{% endblock meta_robots %}
+
+{% block content %}
+<section class="section-pad chapter-paper" style="padding-top: 160px; min-height: 80vh; display: flex; align-items: center;">
+    <div class="zh-container zh-container-narrow" style="text-align: center;">
+        <div class="section-number" style="justify-content: center;">
+            <span class="sn-num">404</span>
+            <span>Uncharted Coordinates / Error 404</span>
+        </div>
+
+        <div class="reveal">
+            <h1>Coordinates. <em>Unresolved.</em></h1>
+            <p class="lede" style="max-width: 520px; margin: 24px auto 36px;">
+                The curriculum module or destination you requested does not exist or has been relocated within the academic index.
+            </p>
+
+            <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+                <a href="{% url 'home' %}" class="zh-btn zh-btn-ink zh-btn-lg">
+                    Return to Homepage <span class="zh-btn-arrow">→</span>
+                </a>
+                <a href="{% url 'all_quiz' %}" class="zh-btn zh-btn-outline zh-btn-lg">
+                    Browse Quizzes
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

@@ -1,145 +1,228 @@
 {% extends "./index.html" %}
+{% load static %}
+
+{% block title %}Assessment Result: {{ quiz.title }} — QuizHub{% endblock title %}
+{% block meta_robots %}noindex, nofollow{% endblock meta_robots %}
 
 {% block content %}
+<section class="section-pad chapter-paper" style="padding-top: 130px; min-height: 85vh;">
+    <div class="zh-container zh-container-narrow">
+        
+        <!-- Numbered Section Label -->
+        <div class="section-number">
+            <span class="sn-num">01</span>
+            <span>Performance Report / Synthesis Index</span>
+        </div>
 
-<div class="container my-5">
-    <!-- Quiz Title -->
-    <h1 class="display-4 text-center my-4 text-primary text-truncate">
-        {{ quiz.title }}
-        <span class="badge bg-secondary fs-5 ">({{ quiz.question_set.count }} Questions)</span>
-    </h1>
-    <p class="fs-4 text-center text-muted text-truncate">{{ quiz.description }}</p>
+        <div style="margin-bottom: 36px;" class="reveal">
+            <h1>Evaluation. <em>Synthesis.</em></h1>
+            <p class="lede" style="margin-top: 12px;">
+                Session completed for <strong>{{ quiz.title }}</strong>. Review your quantitative score and problem-by-problem verification below.
+            </p>
+        </div>
 
-    <!-- Timer and Info Section -->
-    <div class="container bg-light py-3 rounded shadow-sm">
-        <div class="row text-center">
-            <div class="col-md-6 mb-2">
-                <span class="fs-5 text-secondary">
-                    <i class="bi bi-calendar-event text-primary"></i> <strong>Date:</strong> {{ quiz.create_at }}
+        <!-- Metric Stat Cards Grid -->
+        <div class="zh-grid-4 reveal" style="margin-bottom: 36px;">
+            <div class="zh-card-light" style="text-align: center; padding: 22px 14px;">
+                <span class="zh-stat-label" style="margin-top: 0;">Verified Score</span>
+                <span class="zh-stat-num" style="color: var(--ink); margin-top: 6px;">
+                    {{ score }} <span style="font-size: 18px; opacity: 0.5;">/ {{ total_count }}</span>
                 </span>
             </div>
-            <div class="col-md-6 mb-2">
-                <span class="fs-5 text-secondary">
-                    <i class="bi bi-clock text-danger"></i> <strong>Time Taken:</strong> <span class="text-danger fw-bold">{{ time_taken }}</span>
+
+            <div class="zh-card-light" style="text-align: center; padding: 22px 14px;">
+                <span class="zh-stat-label" style="margin-top: 0;">Accuracy Index</span>
+                <span class="zh-stat-num" style="color: {% if accuracy >= 70 %}var(--olive){% elif accuracy >= 40 %}var(--ochre){% else %}var(--clay){% endif %}; margin-top: 6px;">
+                    {{ accuracy }}%
+                </span>
+            </div>
+
+            <div class="zh-card-light" style="text-align: center; padding: 22px 14px;">
+                <span class="zh-stat-label" style="margin-top: 0;">Incorrect</span>
+                <span class="zh-stat-num" style="color: var(--clay); margin-top: 6px;">
+                    {{ incorrect_count }}
+                </span>
+            </div>
+
+            <div class="zh-card-light" style="text-align: center; padding: 22px 14px;">
+                <span class="zh-stat-label" style="margin-top: 0;">Time Expended</span>
+                <span class="zh-stat-num" style="font-size: clamp(26px, 3.2vw, 42px); margin-top: 10px; color: var(--ink);">
+                    {{ formatted_time|default:time_taken }}
                 </span>
             </div>
         </div>
-    </div>
 
-    <!-- Result Section -->
-    <div class="text-center mt-4 bg-primary text-white py-4 rounded shadow-sm">
-        <h3 class="fw-bold">Your Result</h3>
-        <p class="fs-5">
-            <strong>Score:</strong> <span class="badge bg-success fs-4">{{ score }}</span> / <span class="fs-4">{{ total }}</span>
-        </p>
-        <p class="fs-5">
-            <strong>Incorrect Answers:</strong> <span class="badge bg-danger fs-4">{{ incorrect }}</span>
-        </p>
-        <div class="mt-3">
-            <a href="{% url 'retry_quiz' quiz.id %}" class="btn btn-success btn-lg me-2">Retry</a>
-            <a href="{% url 'all_quiz' %}" class="btn btn-outline-light btn-lg me-2">Back to Quizzes</a>
+        <!-- Action CTAs -->
+        <div class="zh-card-dark reveal" style="padding: 24px 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 44px; border-radius: 4px;">
+            <div>
+                <h4 style="color: #ffffff; margin: 0 0 4px; font-size: 20px;">Benchmark Your Standing</h4>
+                <p style="font-size: 13px; color: rgba(255, 255, 255, 0.7); margin: 0;">
+                    Your result has been registered to your profile record and global ranking index.
+                </p>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="{% url 'my_quizzes' %}" class="zh-btn zh-btn-primary zh-btn-sm">
+                    My Assessments <span class="zh-btn-arrow">→</span>
+                </a>
+                <a href="{% url 'retry_quiz' quiz.id %}" class="zh-btn zh-btn-ghost zh-btn-sm">
+                    Re-attempt Session
+                </a>
+                <a href="{% url 'leaderboard' %}" class="zh-btn zh-btn-ghost zh-btn-sm">
+                    Leaderboard
+                </a>
+                <a href="{% url 'all_quiz' %}" class="zh-btn zh-btn-ghost zh-btn-sm">
+                    Catalog
+                </a>
+            </div>
         </div>
-    </div>
 
-    <!-- User Answers Section -->
-     <div class="mt-5 bg-light py-4 px-3 rounded shadow">
-        <h4 class="text-primary fw-bold mb-4">Your Answers:</h4>
-        <div class="list-group">
-            {% for question_id, data in user_answers.items %}
-            <div class="list-group-item d-flex justify-content-between align-items-center p-4">
-                <div class="w-75">
-                    <p class="fw-bold mb-1 text-dark">{{ data.question_text|truncatechars:60 }}</p>
-                    <p class="mb-0">
-                        Your Answer:
-                        {% if data.user_choice %}
-                            <strong class="text-{% if data.is_correct%}success{%else%}danger{% endif %}">{{ data.user_choice.text|truncatechars:50 }}</strong>
-                            {% if data.is_correct %}
-                            <span class="badge bg-success ms-2">Correct</span>
-                            {% else %}
-                            <!-- <span class="badge bg-danger ms-2">Incorrect</span> -->
-                            {% endif %}
+        <!-- Filter Controls -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;" class="reveal">
+            <h2 style="font-size: clamp(22px, 2.8vw, 32px); margin: 0;">Problem-by-problem <em>Verification.</em></h2>
+            
+            <div style="display: flex; gap: 8px;" id="filterBar">
+                <button type="button" class="zh-btn zh-btn-ink zh-btn-sm filter-pill" data-filter="all" style="height: 32px; font-size: 8.5px;">
+                    All ({{ breakdown|length }})
+                </button>
+                <button type="button" class="zh-btn zh-btn-outline zh-btn-sm filter-pill" data-filter="correct" style="height: 32px; font-size: 8.5px;">
+                    Correct ({{ score }})
+                </button>
+                <button type="button" class="zh-btn zh-btn-outline zh-btn-sm filter-pill" data-filter="incorrect" style="height: 32px; font-size: 8.5px;">
+                    Incorrect ({{ incorrect_count }})
+                </button>
+            </div>
+        </div>
+
+        <!-- Problem Review Stack -->
+        <div class="review-stack">
+            {% for item in breakdown %}
+            <div class="review-card zh-card-light reveal" 
+                 data-status="{% if item.is_correct %}correct{% else %}incorrect{% endif %}"
+                 style="margin-bottom: 24px; padding: clamp(22px, 3.2vw, 32px); border-left: 4px solid {% if item.is_correct %}var(--olive){% else %}var(--clay){% endif %}; background: #ffffff; border-radius: 4px;">
+                
+                <!-- Card Header -->
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; border-bottom: 1px solid var(--line); padding-bottom: 10px;">
+                    <span class="eyebrow" style="margin: 0; padding: 0; border: none; color: var(--ochre);">
+                        Problem 0{{ item.index }}
+                    </span>
+                    
+                    {% if item.is_correct %}
+                    <span style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; color: var(--olive); display: inline-flex; align-items: center; gap: 6px;">
+                        <span>✓</span> Verified Correct
+                    </span>
+                    {% else %}
+                    <span style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; color: var(--clay); display: inline-flex; align-items: center; gap: 6px;">
+                        <span>—</span> Inaccurate Choice
+                    </span>
+                    {% endif %}
+                </div>
+
+                <!-- Question Text -->
+                <h3 style="font-family: var(--serif); font-size: clamp(19px, 2.2vw, 24px); font-weight: 400; line-height: 1.4; margin: 0 0 20px; color: var(--ink);">
+                    {{ item.question.text }}
+                </h3>
+
+                <!-- Choices Breakdown List -->
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px;">
+                    {% for choice in item.choices %}
+                    <div style="padding: 12px 18px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; gap: 14px; font-size: 14.5px; transition: all 0.2s ease;
+                        {% if choice.is_user_choice and choice.is_correct %}
+                            background: rgba(98, 104, 82, 0.12); border: 1.5px solid var(--olive); color: var(--ink);
+                        {% elif choice.is_user_choice and not choice.is_correct %}
+                            background: rgba(141, 79, 54, 0.12); border: 1.5px solid var(--clay); color: var(--clay);
+                        {% elif not choice.is_user_choice and choice.is_correct %}
+                            background: rgba(98, 104, 82, 0.06); border: 1.5px dashed var(--olive); color: var(--ink);
                         {% else %}
-                            <em class="text-danger">No Answer</em>
-                        {% endif %}
+                            background: var(--chalk); border: 1px solid var(--line); color: rgba(30, 33, 29, 0.7);
+                        {% endif %}">
+                        
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span class="quiz-option-key" style="
+                                {% if choice.is_user_choice and choice.is_correct %}border-color: var(--olive); color: var(--olive); font-weight: 700;
+                                {% elif choice.is_user_choice and not choice.is_correct %}border-color: var(--clay); color: var(--clay); font-weight: 700;
+                                {% elif choice.is_correct %}border-color: var(--olive); color: var(--olive);
+                                {% else %}border-color: var(--line); opacity: 0.6;{% endif %}">
+                                {% if forloop.counter == 1 %}A{% elif forloop.counter == 2 %}B{% elif forloop.counter == 3 %}C{% elif forloop.counter == 4 %}D{% else %}{{ forloop.counter }}{% endif %}
+                            </span>
+                            <span style="font-weight: {% if choice.is_user_choice or choice.is_correct %}500{% else %}400{% endif %};">
+                                {{ choice.text }}
+                            </span>
+                        </div>
+
+                        <!-- Badge indicator -->
+                        <div style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; text-align: right; white-space: nowrap;">
+                            {% if choice.is_user_choice and choice.is_correct %}
+                                <span style="color: var(--olive);">Your Selection (Correct ✓)</span>
+                            {% elif choice.is_user_choice and not choice.is_correct %}
+                                <span style="color: var(--clay);">Your Selection (Wrong)</span>
+                            {% elif not choice.is_user_choice and choice.is_correct %}
+                                <span style="color: var(--olive);">Verified Answer ✓</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Explanation / Verdict Callout -->
+                <div style="padding: 12px 16px; border-radius: 4px; font-size: 13px; line-height: 1.5; background: var(--chalk); border: 1px solid var(--line);">
+                    {% if item.is_correct %}
+                    <p style="margin: 0; color: var(--olive);">
+                        <strong>Confirmed Accurate:</strong> You selected <em>"{{ item.selected_choice.text }}"</em> which correctly matches the verified rubric.
                     </p>
-                    {% if not data.is_correct %}
-                    <p class="mb-0 text-muted">
-                        Correct Answer: <strong class="text-success">{{ data.correct_choice.text|truncatechars:50 }}</strong>
+                    {% else %}
+                    <p style="margin: 0; color: var(--clay);">
+                        <strong>Discrepancy:</strong> You selected 
+                        <em>"{% if item.selected_choice %}{{ item.selected_choice.text }}{% else %}No choice submitted{% endif %}"</em>. 
+                        The correct answer is <strong>"{{ item.correct_choice.text }}"</strong>.
                     </p>
                     {% endif %}
                 </div>
-                <i class="bi {% if data.is_correct %}bi-check-circle-fill text-success{% else %}bi-x-circle-fill text-danger{% endif %} fs-3"></i>
+
+            </div>
+            {% empty %}
+            <div class="zh-card-light" style="text-align: center; padding: 40px;">
+                <p style="color: var(--clay);">Review breakdown is not available for this session.</p>
             </div>
             {% endfor %}
         </div>
+
+        <!-- Back to Top / Navigation Footer -->
+        <div style="text-align: center; margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--line);">
+            <a href="{% url 'my_quizzes' %}" class="zh-btn zh-btn-ink">
+                ← View All My Assessments
+            </a>
+        </div>
+
     </div>
+</section>
 
-    <!-- Incorrect Answers Section -->
+<script>
+    // Filter Bar Logic (All / Correct / Incorrect)
+    (function () {
+        const filterPills = document.querySelectorAll('.filter-pill');
+        const cards = document.querySelectorAll('.review-card');
 
-</div>
+        filterPills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                const filter = pill.getAttribute('data-filter');
 
-<style>
-    /* General Styling */
-    body {
-        background: #f8f9fa;
-    }
+                filterPills.forEach(p => {
+                    p.classList.remove('zh-btn-ink');
+                    p.classList.add('zh-btn-outline');
+                });
+                pill.classList.remove('zh-btn-outline');
+                pill.classList.add('zh-btn-ink');
 
-    .badge {
-        font-size: 1.2rem;
-        padding: 0.6rem 1.2rem;
-    }
-
-    .list-group-item {
-        border: none;
-        background: #fff;
-        margin-bottom: 1rem;
-        border-radius: 10px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .list-group-item:hover {
-        background: #f8f8f8;
-    }
-
-    .fw-bold {
-        color: #333;
-    }
-
-    .container {
-        max-width: 1100px;
-    }
-
-    .list-group-item i {
-        font-size: 1.8rem;
-    }
-
-    /* Badge Styling */
-    .badge.bg-success {
-        background-color: #28a745 !important;
-    }
-
-    .badge.bg-danger {
-        background-color: #dc3545 !important;
-    }
-
-    /* Buttons */
-    .btn {
-        padding: 0.8rem 2rem;
-        border-radius: 30px;
-        font-size: 1.2rem;
-    }
-
-    /* Responsive Styling */
-    @media (max-width: 768px) {
-        .container {
-            padding: 1rem;
-        }
-
-        .list-group-item {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-    }
-</style>
-
+                cards.forEach(card => {
+                    const status = card.getAttribute('data-status');
+                    if (filter === 'all' || status === filter) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    })();
+</script>
 {% endblock content %}

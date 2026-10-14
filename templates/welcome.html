@@ -1,277 +1,438 @@
 {% extends "./index.html" %}
 {% load static %}
 
+{% block title %}QuizHub — Knowledge-Driven Online Quiz Platform{% endblock title %}
+{% block meta_description %}Challenge your intellect with precision quizzes in computer science, software engineering, and technical mastery.{% endblock meta_description %}
+{% block body_class %}has-dark-hero{% endblock body_class %}
+
 {% block content %}
-<div class="container my-2">
-    <h2 id="typing-text" class="display-4 fw-bold text-dark text-center"></h2>
-</div>
-{% if messages %}
-    <div id="success-message" class="alert alert-success text-center" style="font-size: 1.5rem; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1050;">
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    </div>
-{% endif %}
-<div class="container my-5">
-    <div class="hero-section">
-        <div class="hero-text">
-            <h1 class="display-4 fw-bold text-primary">Create a Free <span class="text-warning">Quiz Now</span></h1>
-            <p class="fs-5 text-muted">The versatile data collection tool for professionals. Typeform makes asking easy & answering refreshing.</p>
-            <div class="d-flex flex-wrap gap-3">
-                <a href="{% url 'all_quiz' %}" class="btn btn-primary btn-lg">Start a Quiz</a>
+<!-- ================================================================
+     00 / HERO FULL-BLEED CHAPTER
+     ================================================================ -->
+<section class="zh-hero" aria-label="Hero Section">
+    <!-- Atmospheric Ambient Background Image -->
+    <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1920&q=80" 
+         alt="Architectural study hall atmosphere" 
+         class="zh-hero-bg" 
+         loading="eager" 
+         fetchpriority="high">
+    <div class="zh-hero-shade"></div>
+
+    <div class="zh-container zh-hero-grid">
+        <!-- Hero Editorial Copy -->
+        <div class="reveal">
+            <span class="eyebrow light">Editorial Assessment Platform</span>
+            <h1>Knowledge-driven. <em>Refined intellect.</em></h1>
+            <p class="lede" style="color: rgba(255, 255, 255, 0.88); margin-top: 28px; max-width: 540px;">
+                A curated destination for technical scholars. Experience distraction-free evaluations engineered to test depth of understanding across contemporary computing disciplines.
+            </p>
+            <div style="display: flex; gap: 16px; margin-top: 36px; flex-wrap: wrap;">
+                <a href="{% url 'all_quiz' %}" class="zh-btn zh-btn-primary zh-btn-lg">
+                    Explore All Quizzes <span class="zh-btn-arrow">→</span>
+                </a>
                 {% if not request.user.is_authenticated %}
-                <a href="{% url 'register' %}" class="btn btn-outline-secondary btn-lg">Sign Up</a>
+                <a href="{% url 'register' %}" class="zh-btn zh-btn-ghost zh-btn-lg">
+                    Begin Membership
+                </a>
                 {% endif %}
-                <a href="{% url 'view_course' %}" class="btn btn-success btn-lg">Browse Courses</a>
             </div>
         </div>
-        <div class="hero-image">
-            <img src="{% static 'images/home.png' %}" alt="Quiz Illustration" loading="lazy">
+
+        <!-- Hero Ink Form Card -->
+        <div class="zh-hero-card reveal">
+            <span class="eyebrow light" style="margin-bottom: 14px;">Direct Challenge / 01</span>
+            <h3 style="color: #ffffff; margin-bottom: 12px;">Instant Evaluation</h3>
+            <p style="font-size: 13.5px; line-height: 1.6; color: rgba(255, 255, 255, 0.75); margin-bottom: 24px;">
+                Enter your discipline of choice and start a timed assessment immediately without friction.
+            </p>
+            <div class="zh-field">
+                <label class="zh-label" for="heroDiscipline">Selected Focus</label>
+                <select id="heroDiscipline" class="zh-select" onchange="if(this.value) window.location.href=this.value;">
+                    <option value="">Choose a discipline...</option>
+                    <option value="{% url 'all_quiz' %}">All Technical Quizzes</option>
+                    <option value="{% url 'view_course' %}">Python Foundations</option>
+                    <option value="{% url 'view_course' %}">Web Architecture</option>
+                    <option value="{% url 'leaderboard' %}">Global Leaderboard</option>
+                </select>
+            </div>
+            <a href="{% url 'all_quiz' %}" class="zh-btn zh-btn-primary" style="width: 100%; margin-top: 10px;">
+                Enter Assessment Session <span class="zh-btn-arrow">→</span>
+            </a>
+            <div style="margin-top: 16px; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255, 255, 255, 0.45); text-align: center;">
+                Zero distraction • Pure evaluation
+            </div>
         </div>
     </div>
-</div>  
+</section>
 
-<div class="container text-center">
-    <h2 class="display-4 text-center my-5 text-primary">Leaderboard</h2>
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
-        {% for user_score in leaderboard_user %}
-        <div class="col">
-            <div class="card shadow-sm border-dark rounded-5 leaderboard-card">
-                <div class="card-body text-center position-relative">
-                    {% if user_score.user.profile.profile_img %}
-                    <img src="{{ user_score.user.profile.profile_img.url }}" class="profile-img" alt="{{ user_score.user.username }}" loading="lazy">
-                    {% else %}
-                    <img src="{% static 'default_profile.jpg' %}" class="profile-img" alt="Default Profile" loading="lazy">
-                    {% endif %}
-                    
-                    <span class="badge rank-badge">#{{ forloop.counter }}</span>
+<!-- ================================================================
+     01 / THE PROPOSITION (WHY QUIZHUB & KEY STATS)
+     ================================================================ -->
+<section class="section-pad chapter-paper" aria-label="The Proposition">
+    <div class="zh-container">
+        <div class="section-number">
+            <span class="sn-num">01</span>
+            <span>The Proposition / Architecture of Mind</span>
+        </div>
 
-                    <h5 class="card-title fw-bold text-dark">@{{ user_score.user.username }}</h5>
-                    <p class="card-text">Score: <strong>{{ user_score.score }}</strong></p>
-                    <a href="{% url 'leaderboard' %}" class="btn btn-outline-primary mt-3">View Leaderboard</a>
+        <div class="zh-split-grid">
+            <div class="reveal">
+                <h2>Precision in inquiry. <em>Clarity in result.</em></h2>
+                <p class="lede" style="margin-top: 24px; color: var(--ink);">
+                    Traditional quiz portals clutter the pursuit of learning with gamified noise. QuizHub strips away superficial distractions to focus exclusively on clarity, depth, and rigorous algorithmic evaluation.
+                </p>
+                <p style="font-size: 15px; color: rgba(30, 33, 29, 0.8); line-height: 1.7;">
+                    Each question set is calibrated across foundational principles, edge-case discernment, and architectural comprehension. Whether you are reviewing core memory models or asynchronous concurrency, you are assessed with unyielding accuracy.
+                </p>
+            </div>
+
+            <!-- Stats Block -->
+            <div class="reveal">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                    <div class="zh-stat-block">
+                        <span class="zh-stat-num">84+</span>
+                        <span class="zh-stat-label">Calibrated Questions</span>
+                    </div>
+                    <div class="zh-stat-block">
+                        <span class="zh-stat-num">04</span>
+                        <span class="zh-stat-label">Active Disciplines</span>
+                    </div>
+                    <div class="zh-stat-block">
+                        <span class="zh-stat-num">10m</span>
+                        <span class="zh-stat-label">Standard Session</span>
+                    </div>
+                    <div class="zh-stat-block">
+                        <span class="zh-stat-num">100%</span>
+                        <span class="zh-stat-label">Verified Accuracy</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--line);">
+                    <ul class="zh-list-editorial">
+                        <li>
+                            <span>Algorithmic randomization per attempt</span>
+                            <span class="metric">Dynamic</span>
+                        </li>
+                        <li>
+                            <span>Sub-second instant result synthesis</span>
+                            <span class="metric">Instant</span>
+                        </li>
+                        <li>
+                            <span>Comprehensive answer analysis</span>
+                            <span class="metric">Included</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
-        {% empty %}
-        <div class="col-12">
-            <p class="text-center text-muted">No leaderboard data available yet.</p>
-        </div>
-        {% endfor %}
     </div>
-</div>
+</section>
 
-<style>
-/* --- Hero Section Responsive Design --- */
-.hero-section {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    padding: 60px 30px;
-    animation: fadeInUp 1s ease-in-out;
-}
+<!-- ================================================================
+     02 / CATEGORIES & DISCIPLINES (SPLIT IMAGE + TEXT BLOCKS)
+     ================================================================ -->
+<section class="section-pad chapter-chalk" aria-label="Disciplines">
+    <div class="zh-container">
+        <div class="section-number">
+            <span class="sn-num">02</span>
+            <span>Disciplines / Core Pillars</span>
+        </div>
 
-.hero-text {
-    max-width: 50%;
-    animation: slideLeft 1s ease-in-out;
-}
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 50px; flex-wrap: wrap; gap: 20px;">
+            <div>
+                <h2>Selected fields of <em>inquiry.</em></h2>
+            </div>
+            <a href="{% url 'all_quiz' %}" class="zh-btn zh-btn-ink">
+                View Entire Catalog <span class="zh-btn-arrow">→</span>
+            </a>
+        </div>
 
-.hero-image {
-    max-width: 45%;
-    height: auto;
-    opacity: 0.9;
-    animation: fadeInUp 1s ease-in-out, floatImage 3s infinite ease-in-out;
-}
+        <!-- Discipline 1: Computer Science & Python -->
+        <div class="zh-split-grid reveal" style="margin-bottom: clamp(60px, 8vw, 100px);">
+            <div style="overflow: hidden; border: 1px solid var(--line);">
+                <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80" 
+                     alt="Computer code and systems architecture" 
+                     style="width: 100%; height: 380px; object-fit: cover; transition: transform 0.8s var(--ease-editorial);" 
+                     onmouseover="this.style.transform='scale(1.03)'" 
+                     onmouseout="this.style.transform='scale(1)'" 
+                     loading="lazy">
+            </div>
+            <div>
+                <span class="eyebrow">Discipline 01 / Core Logic</span>
+                <h3>Python Systems & Mechanics</h3>
+                <p style="font-size: 15px; line-height: 1.7; color: rgba(30, 33, 29, 0.8); margin-top: 16px;">
+                    Test your mastery over Python internal mechanisms, data structure complexities, generator lifecycles, and object-oriented architectures.
+                </p>
+                <ul class="zh-list-editorial" style="margin: 24px 0 32px;">
+                    <li><span>Question Bank</span><span class="metric">40 Modules</span></li>
+                    <li><span>Difficulty Range</span><span class="metric">Easy — Advanced</span></li>
+                    <li><span>Assessment Format</span><span class="metric">Multiple Choice</span></li>
+                </ul>
+                <a href="{% url 'all_quiz' %}" class="zh-btn zh-btn-outline">
+                    Explore Python Quizzes <span class="zh-btn-arrow">→</span>
+                </a>
+            </div>
+        </div>
 
-.hero-image img {
-    width: 100%;
-    height: auto;
-    max-height: 300px;
-    object-fit: contain;
-    opacity: 0.9;
-    transition: transform 0.3s ease-in-out;
-}
+        <!-- Discipline 2: Web Engineering & Standards -->
+        <div class="zh-split-grid reversed reveal">
+            <div>
+                <span class="eyebrow">Discipline 02 / Interface & Protocol</span>
+                <h3>Web Standards & Architecture</h3>
+                <p style="font-size: 15px; line-height: 1.7; color: rgba(30, 33, 29, 0.8); margin-top: 16px;">
+                    Deep dive into DOM event propagation, HTTP semantic lifecycles, layout algorithms, responsive viewports, and modern JavaScript engines.
+                </p>
+                <ul class="zh-list-editorial" style="margin: 24px 0 32px;">
+                    <li><span>Question Bank</span><span class="metric">44 Modules</span></li>
+                    <li><span>Evaluation Standard</span><span class="metric">W3C Compliant</span></li>
+                    <li><span>Session Duration</span><span class="metric">10 Minutes</span></li>
+                </ul>
+                <a href="{% url 'all_quiz' %}" class="zh-btn zh-btn-outline">
+                    Explore Web Quizzes <span class="zh-btn-arrow">→</span>
+                </a>
+            </div>
+            <div style="overflow: hidden; border: 1px solid var(--line);">
+                <img src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=1200&q=80" 
+                     alt="Minimalist design and architecture drafting" 
+                     style="width: 100%; height: 380px; object-fit: cover; transition: transform 0.8s var(--ease-editorial);" 
+                     onmouseover="this.style.transform='scale(1.03)'" 
+                     onmouseout="this.style.transform='scale(1)'" 
+                     loading="lazy">
+            </div>
+        </div>
+    </div>
+</section>
 
-.hero-image img:hover {
-    transform: scale(1.02);
-}
+<!-- ================================================================
+     03 / HOW IT WORKS (METHODOLOGY)
+     ================================================================ -->
+<section class="section-pad chapter-dark" aria-label="How it works">
+    <div class="zh-container">
+        <div class="section-number light">
+            <span class="sn-num">03</span>
+            <span>Methodology / The Three Phases</span>
+        </div>
 
-/* Responsive adjustments */
-@media (max-width: 992px) {
-    .hero-text {
-        max-width: 100%;
-        text-align: center;
-    }
-    .hero-image {
-        max-width: 80%;
-        margin: 0 auto;
-    }
-}
+        <div style="max-width: 640px; margin-bottom: 60px;" class="reveal">
+            <h2>Three stages of <em>intellectual rigour.</em></h2>
+            <p class="lede" style="color: rgba(255, 255, 255, 0.82); margin-top: 20px;">
+                Designed around deliberate cognitive challenge. Each attempt tests your ability to synthesize answers under disciplined temporal constraints.
+            </p>
+        </div>
 
-@media (max-width: 768px) {
-    .hero-section {
-        flex-direction: column;
-        text-align: center;
-    }
-    .hero-image {
-        max-width: 90%;
-    }
-}
+        <div class="zh-grid-3">
+            <!-- Phase 1 -->
+            <div class="zh-card-dark reveal">
+                <span class="eyebrow light">Phase 01</span>
+                <h3 style="color: #ffffff; margin-top: 10px;">Select Discipline</h3>
+                <p style="font-size: 14px; line-height: 1.65; color: rgba(255, 255, 255, 0.75); margin-top: 16px;">
+                    Choose a tailored topic and target difficulty level. The system dynamically selects 10 randomized problems from our peer-reviewed repository.
+                </p>
+                <div style="margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--line-light); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ochre);">
+                    Step 01 / Dynamic Assembly
+                </div>
+            </div>
 
-/* --- Leaderboard Styling --- */
-.leaderboard-card {
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s;
-}
+            <!-- Phase 2 -->
+            <div class="zh-card-dark reveal">
+                <span class="eyebrow light">Phase 02</span>
+                <h3 style="color: #ffffff; margin-top: 10px;">Timed Focus</h3>
+                <p style="font-size: 14px; line-height: 1.65; color: rgba(255, 255, 255, 0.75); margin-top: 16px;">
+                    Operate in a distraction-free, one-by-one presentation. Live precision countdown timer keeps you accountable without peripheral clutter.
+                </p>
+                <div style="margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--line-light); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ochre);">
+                    Step 02 / Pure Concentration
+                </div>
+            </div>
 
-.leaderboard-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
-}
+            <!-- Phase 3 -->
+            <div class="zh-card-dark reveal">
+                <span class="eyebrow light">Phase 03</span>
+                <h3 style="color: #ffffff; margin-top: 10px;">Review & Rank</h3>
+                <p style="font-size: 14px; line-height: 1.65; color: rgba(255, 255, 255, 0.75); margin-top: 16px;">
+                    Receive immediate, transparent feedback. Examine correct versus chosen answers, record your score, and benchmark your rank on the global leaderboard.
+                </p>
+                <div style="margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--line-light); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ochre);">
+                    Step 03 / Absolute Merit
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-.profile-img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 3px solid #007bff;
-}
+<!-- ================================================================
+     04 / LEADERBOARD PREVIEW (THE MERIT LIST)
+     ================================================================ -->
+<section class="section-pad chapter-paper" aria-label="Leaderboard Preview">
+    <div class="zh-container">
+        <div class="section-number">
+            <span class="sn-num">04</span>
+            <span>Distinction / The Global Index</span>
+        </div>
 
-.rank-badge {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #ffc107;
-    color: #212529;
-    font-weight: bold;
-    padding: 5px 10px;
-    border-radius: 10px;
-}
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 50px; flex-wrap: wrap; gap: 20px;">
+            <div>
+                <h2>Scholars of <em>distinction.</em></h2>
+                <p class="lede" style="margin-top: 16px; color: var(--ink);">
+                    Recognizing the highest scores and quickest synthesis times recorded across the platform.
+                </p>
+            </div>
+            <a href="{% url 'leaderboard' %}" class="zh-btn zh-btn-ink">
+                Full Leaderboard <span class="zh-btn-arrow">→</span>
+            </a>
+        </div>
 
-/* --- Button Hover Effect --- */
-.btn {
-    transition: all 0.3s ease-in-out;
-}
+        <div class="zh-card-light reveal" style="padding: 0; overflow-x: auto;">
+            <table class="zh-table">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">Rank</th>
+                        <th>Scholar</th>
+                        <th>Challenge</th>
+                        <th style="text-align: right;">Score</th>
+                        <th style="text-align: right;">Time Elapsed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for score_entry in leaderboard_user %}
+                    <tr>
+                        <td class="zh-rank-num">
+                            #0{{ forloop.counter }}
+                        </td>
+                        <td>
+                            <a href="{% url 'profile' score_entry.user.username %}" style="font-weight: 500; text-decoration: underline; text-underline-offset: 4px;">
+                                @{{ score_entry.user.username }}
+                            </a>
+                        </td>
+                        <td style="color: rgba(30, 33, 29, 0.75);">
+                            {{ score_entry.quiz.title|default:"Technical Assessment" }}
+                        </td>
+                        <td style="text-align: right; font-family: var(--serif); font-size: 22px; font-weight: 500;">
+                            {{ score_entry.score }} pts
+                        </td>
+                        <td style="text-align: right; font-size: 13.5px; opacity: 0.7;">
+                            {{ score_entry.time_taken|default:"00:00" }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 40px; color: rgba(30, 33, 29, 0.6);">
+                            No assessment records currently published. Complete a quiz to claim the first rank.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
 
-.btn:hover {
-    transform: scale(1.05);
-}
+<!-- ================================================================
+     05 / MULTI-STEP INITIATION / CONTACT INQUIRY (LOAM HOUSE FORM)
+     ================================================================ -->
+<section class="section-pad chapter-dark" aria-label="Inquiry and Register" style="position: relative; overflow: hidden;">
+    <!-- Subtle Background Graphic Overlay -->
+    <div style="position: absolute; inset: 0; background: radial-gradient(circle at 75% 30%, rgba(141, 79, 54, 0.15) 0%, transparent 60%); pointer-events: none;"></div>
 
-/* --- Keyframe Animations --- */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+    <div class="zh-container zh-container-narrow" style="position: relative; z-index: 2;">
+        <div class="section-number light">
+            <span class="sn-num">05</span>
+            <span>Initiation / Register Interest & Feedback</span>
+        </div>
 
-@keyframes floatImage {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-8px); }
-    100% { transform: translateY(0px); }
-}
+        <div style="text-align: center; margin-bottom: 40px;" class="reveal">
+            <h2>Dialogue & <em>membership.</em></h2>
+            <p class="lede" style="color: rgba(255, 255, 255, 0.82); margin-top: 14px;">
+                Submit an inquiry, provide technical feedback, or register your intent for advanced syllabus tracks.
+            </p>
+        </div>
 
-@keyframes slideLeft {
-    from {
-        opacity: 0;
-        transform: translateX(-30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-.typing-char {
-    opacity: 0;
-    transform: translateY(10px);
-    display: inline-block;
-    animation: fadeInUp 0.05s ease-in-out forwards;
-}
+        <!-- Loam House Multi-Step Form Card -->
+        <div class="zh-hero-card reveal" style="max-width: 600px; margin: 0 auto;" data-multistep-form>
+            <!-- Step Indicator Dots -->
+            <ul class="zh-step-bar">
+                <li class="zh-step-item active" data-step-dot="1">
+                    <span class="zh-step-dot"></span>
+                    <span>01 / You</span>
+                </li>
+                <li class="zh-step-item" data-step-dot="2">
+                    <span class="zh-step-dot"></span>
+                    <span>02 / Focus</span>
+                </li>
+                <li class="zh-step-item" data-step-dot="3">
+                    <span class="zh-step-dot"></span>
+                    <span>03 / Enquiry</span>
+                </li>
+            </ul>
 
-/* Keyframes for smooth character appearance */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-</style>
+            <form method="POST" action="{% url 'contactUs' %}">
+                {% csrf_token %}
 
-<div class="container my-2">
-    <h2 id="typing-text" class="display-4 fw-bold text-dark text-center"></h2>
-</div>
+                <!-- STEP 1: Identification -->
+                <div data-step="1">
+                    <div class="zh-field">
+                        <label class="zh-label" for="msf_username">Your Identifier / Username</label>
+                        <input type="text" id="msf_username" name="sender_name" class="zh-input" 
+                               value="{% if request.user.is_authenticated %}{{ request.user.username }}{% endif %}" 
+                               placeholder="e.g. adafan or scholar_42" required>
+                    </div>
+                    <div class="zh-field">
+                        <label class="zh-label" for="msf_email">Contact Address</label>
+                        <input type="email" id="msf_email" name="sender_email" class="zh-input" 
+                               value="{% if request.user.is_authenticated %}{{ request.user.email }}{% endif %}" 
+                               placeholder="name@institution.org" required>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; margin-top: 28px;">
+                        <button type="button" class="zh-btn zh-btn-primary" data-next-step>
+                            Continue to Focus <span class="zh-btn-arrow">→</span>
+                        </button>
+                    </div>
+                </div>
 
-<style>
-/* Smooth character fade-in effect */
-.typing-char {
-    opacity: 0;
-    transform: translateY(10px);
-    display: inline-block;
-    animation: fadeInUp 0.05s ease-in-out forwards;
-}
+                <!-- STEP 2: Subject / Focus -->
+                <div data-step="2" style="display: none;">
+                    <div class="zh-field">
+                        <label class="zh-label" for="msf_subject">Subject of Inquiry</label>
+                        <input type="text" id="msf_subject" name="subject" class="zh-input" 
+                               placeholder="e.g. Syllabus request, platform feedback, or partnership" required>
+                    </div>
+                    <div class="zh-field">
+                        <label class="zh-label" for="msf_interest">Target Discipline</label>
+                        <select id="msf_interest" name="interest_area" class="zh-select">
+                            <option value="Python Systems">Python Systems Architecture</option>
+                            <option value="Web Standards">Web Protocols & Frontend Internals</option>
+                            <option value="Algorithms">Algorithmic Theory</option>
+                            <option value="Platform Feedback">General Platform Experience</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 28px;">
+                        <button type="button" class="zh-btn zh-btn-ghost" data-prev-step>
+                            ← Back
+                        </button>
+                        <button type="button" class="zh-btn zh-btn-primary" data-next-step>
+                            Proceed to Note <span class="zh-btn-arrow">→</span>
+                        </button>
+                    </div>
+                </div>
 
-/* Ensure spacing is maintained */
-.typing-space {
-    display: inline-block;
-    width: 8px; /* Adjust spacing */
-}
-
-/* Fade-in keyframe animation */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-</style>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    let text = "Welcome to QuizHub"; // Text to animate
-    let textContainer = document.getElementById("typing-text");
-
-    textContainer.innerHTML = ""; // Clear existing text
-
-    text.split("").forEach((char, index) => {
-        let span = document.createElement("span");
-        span.textContent = char;
-
-        if (char === " ") {
-            span.classList.add("typing-space"); // Add space class for proper spacing
-        } else {
-            span.classList.add("typing-char");
-            span.style.animationDelay = `${index * 50}ms`; // Delay each character
-        }
-
-        textContainer.appendChild(span);
-    });
-});
-</script>
-<script>
-        // Function to show the success message
-        function showSuccessMessage() {
-            const messageElement = document.getElementById('success-message');
-            messageElement.style.display = 'block'; // Show the message
-            setTimeout(() => {
-                messageElement.style.display = 'none'; // Hide the message after 5 seconds
-            }, 500);
-        }
-    
-        // Call this function when the page loads or after form submission
-        document.addEventListener('DOMContentLoaded', () => {
-            // Simulate triggering the success message
-            showSuccessMessage();
-        });
-    </script>
+                <!-- STEP 3: Message / Transmission -->
+                <div data-step="3" style="display: none;">
+                    <div class="zh-field">
+                        <label class="zh-label" for="msf_message">Your Observation / Message</label>
+                        <textarea id="msf_message" name="message" class="zh-textarea" 
+                                  placeholder="Provide any detailed remarks, questions, or recommendations..." required></textarea>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 28px;">
+                        <button type="button" class="zh-btn zh-btn-ghost" data-prev-step>
+                            ← Back
+                        </button>
+                        <button type="submit" class="zh-btn zh-btn-primary">
+                            Submit Inquiry <span class="zh-btn-arrow">→</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
 {% endblock content %}

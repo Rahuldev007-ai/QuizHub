@@ -1,0 +1,29 @@
+{% extends "./index.html" %}
+{% load static %}
+
+{% block title %}500 — System Exception | QuizHub{% endblock title %}
+{% block meta_robots %}noindex, nofollow{% endblock meta_robots %}
+
+{% block content %}
+<section class="section-pad chapter-paper" style="padding-top: 160px; min-height: 80vh; display: flex; align-items: center;">
+    <div class="zh-container zh-container-narrow" style="text-align: center;">
+        <div class="section-number" style="justify-content: center;">
+            <span class="sn-num">500</span>
+            <span>Internal Telemetry Exception / Error 500</span>
+        </div>
+
+        <div class="reveal">
+            <h1>Internal. <em>Interruption.</em></h1>
+            <p class="lede" style="max-width: 520px; margin: 24px auto 36px;">
+                An unforeseen computational exception occurred while processing this assessment request. The administrative team has received telemetry.
+            </p>
+
+            <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+                <a href="{% url 'home' %}" class="zh-btn zh-btn-ink zh-btn-lg">
+                    Return to Homepage <span class="zh-btn-arrow">→</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

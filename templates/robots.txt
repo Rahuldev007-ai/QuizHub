@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Allow: /about
+Allow: /termsAndConditions
+Allow: /view_course
+Allow: /quiz/all_quiz
+Disallow: /admin/
+Disallow: /dashboard
+Disallow: /user/
+Disallow: /message_view/
+
+Sitemap: https://quizhub.example.com/sitemap.xml

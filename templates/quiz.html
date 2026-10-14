@@ -1,87 +1,146 @@
 {% extends "./index.html" %}
+{% load static %}
+
+{% block title %}{{ quiz.title }} — Comprehensive Assessment | QuizHub{% endblock title %}
+{% block meta_robots %}noindex, nofollow{% endblock meta_robots %}
+{% block body_class %}quiz-mode-active{% endblock body_class %}
 
 {% block content %}
-
-<div class="container my-5">
-    <h1 class="display-4 text-center my-4 text-primary">{{ quiz.title }} - ({{ quiz.question_set.count }})</h1>
-    <p class="fs-4 text-center text-muted">{{ quiz.description }}</p>
-
-    <!-- Timer and Info -->
-    <div class="container bg-light py-3 rounded shadow-sm">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <span class="fs-5 text-secondary"><i class="bi bi-calendar-event"></i> {{ quiz.create_at }}</span>
-            <span class="fs-5 text-secondary"><i class="bi bi-clock"></i> Time Remaining: <span id="timer" class="text-danger fw-bold">10:00</span></span>
+<div class="quiz-proctor-wrap">
+    <!-- Top Proctored Exam Header -->
+    <header class="quiz-proctor-bar">
+        <div class="quiz-proctor-brand">
+            <span>QuizHub <em>/</em></span>
+            <span style="font-family: var(--sans); font-size: 13px; font-weight: 500; opacity: 0.8; letter-spacing: 0.04em; text-transform: uppercase;">
+                {{ quiz.title }}
+            </span>
         </div>
-    </div>
 
-    <form id="quizForm" method="POST" action="{% url 'quiz' quiz.id %}">
-        {% csrf_token %}
-        <div class="questions my-4">
-            <!-- Loop for questions -->
-            {% for question in quiz.question_set.all %}
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header bg-primary text-white fw-bold">
-                    Question {{ forloop.counter }}
+        <!-- Live Clock Timer -->
+        <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="display: flex; align-items: baseline; gap: 6px;">
+                <span class="zh-label" style="margin: 0; font-size: 8.5px;">Remaining:</span>
+                <span id="timer" style="font-family: var(--serif); font-size: 22px; font-weight: 500; color: var(--clay); line-height: 1;">10:00</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="quiz-proctor-stage">
+        <div class="quiz-card-surface">
+            <div style="margin-bottom: 24px;">
+                <div class="section-number" style="margin-bottom: 12px;">
+                    <span class="sn-num">01</span>
+                    <span>Comprehensive Evaluation / {{ quiz.title }}</span>
                 </div>
-                <div class="card-body">
-                    <p class="card-text">{{ question.text }}</p>
-                    {% for choice in question.choice_set.all %}
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="question_{{ question.id }}" id="choice_{{ choice.id }}" value="{{ choice.id }}">
-                        <label class="form-check-label" for="choice_{{ choice.id }}">{{ choice.text }}</label>
+                <h1 style="font-size: clamp(24px, 3vw, 36px); margin-bottom: 8px;">{{ quiz.title }}</h1>
+                <p class="lede" style="margin: 0; font-size: 15px;">
+                    {{ quiz.description|default:"Standard comprehensive evaluation format. Answer all questions below." }}
+                </p>
+            </div>
+
+            <form id="quizForm" method="POST" action="{% url 'quiz' quiz.id %}">
+                {% csrf_token %}
+                
+                <div class="questions-stack">
+                    {% for question in quiz.question_set.all %}
+                    <div class="zh-card-light" style="margin-bottom: 24px; padding: clamp(20px, 2.8vw, 32px); background: #ffffff; border: 1px solid var(--line); border-radius: 4px;">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; border-bottom: 1px solid var(--line); padding-bottom: 8px;">
+                            <span class="eyebrow" style="margin: 0; padding: 0; border: none; color: var(--ochre);">
+                                Problem 0{{ forloop.counter }}
+                            </span>
+                            <span style="font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.5;">
+                                Single Answer
+                            </span>
+                        </div>
+
+                        <h3 style="font-family: var(--serif); font-size: 20px; font-weight: 400; line-height: 1.4; margin-bottom: 20px; color: var(--ink);">
+                            {{ question.text }}
+                        </h3>
+
+                        <div class="choices-stack">
+                            {% for choice in question.choice_set.all %}
+                            <label class="quiz-option-label" for="choice_{{ choice.id }}">
+                                <input type="radio" 
+                                       name="question_{{ question.id }}" 
+                                       id="choice_{{ choice.id }}" 
+                                       value="{{ choice.id }}" 
+                                       style="position: absolute; opacity: 0; pointer-events: none;">
+                                <span class="quiz-option-key">
+                                    {% if forloop.counter == 1 %}A{% elif forloop.counter == 2 %}B{% elif forloop.counter == 3 %}C{% elif forloop.counter == 4 %}D{% else %}{{ forloop.counter }}{% endif %}
+                                </span>
+                                <span class="quiz-option-text" style="font-size: 15px; font-weight: 400;">
+                                    {{ choice.text }}
+                                </span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="zh-card-light" style="text-align: center; padding: 40px;">
+                        <p style="color: var(--clay);">No questions available for this quiz currently.</p>
                     </div>
                     {% endfor %}
                 </div>
-            </div>
-            {% empty %}
-            <p class="text-danger text-center fs-5">No questions are available for this quiz.</p>
-            {% endfor %}
-        </div>
 
-        <div class="text-center mt-4">
-            <button id="submitBtn" type="submit" class="btn btn-lg btn-success shadow">
-                <i class="bi bi-check-circle"></i> Submit the Quiz
-            </button>
+                <div style="text-align: center; margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--line);">
+                    <button id="submitBtn" type="submit" class="zh-btn zh-btn-ink zh-btn-lg">
+                        Complete & Submit Assessment <span class="zh-btn-arrow">→</span>
+                    </button>
+                </div>
+            </form>
         </div>
-    </form>
+    </main>
 </div>
 
-<!-- JavaScript for Timer and Submit Handling -->
 <script>
-    // Timer Variables
-    let totalTime = 10 * 60; // 10 minutes in seconds
-    const timerDisplay = document.getElementById('timer');
-    const form = document.getElementById('quizForm');
-    const submitBtn = document.getElementById('submitBtn');
-    let timer;
-
-    // Function to start the timer
-    function startTimer() {
-        timer = setInterval(function () {
+    (function () {
+        let totalTime = 10 * 60;
+        const timerDisplay = document.getElementById('timer');
+        const form = document.getElementById('quizForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const startTime = Date.now();
+        let timer = setInterval(() => {
             let minutes = Math.floor(totalTime / 60);
             let seconds = totalTime % 60;
-            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-            // End the quiz when time is up
+            if (timerDisplay) {
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
             if (totalTime <= 0) {
                 clearInterval(timer);
-                alert("Time is up! Submitting the quiz...");
-                form.submit();  // Automatically submit the form
+                alert("Session expired. Auto-submitting answers.");
+                form.submit();
             }
-
             totalTime--;
         }, 1000);
-    }
 
-    // Prevent multiple submissions and update the button state
-    form.addEventListener('submit', function () {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="bi bi-arrow-repeat"></i> Submitting...';
-        clearInterval(timer); // Stop the timer when submitted
-    });
+        document.querySelectorAll('.quiz-option-label').forEach((item) => {
+            item.addEventListener('click', function () {
+                const radio = this.querySelector('input[type="radio"]');
+                if (radio) {
+                    radio.checked = true;
+                    const parent = this.closest('.choices-stack');
+                    parent.querySelectorAll('.quiz-option-label').forEach(el => el.classList.remove('selected'));
+                    this.classList.add('selected');
+                }
+            });
+        });
 
-    // Start the timer when the page loads
-    window.onload = startTimer;
+        form.addEventListener('submit', () => {
+            const totalSpent = Math.max(1, Math.floor((Date.now() - startTime) / 1000));
+            const m = Math.floor(totalSpent / 60);
+            const s = totalSpent % 60;
+            const hidden = document.createElement("input");
+            hidden.type = "hidden";
+            hidden.name = "time_taken";
+            hidden.value = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            form.appendChild(hidden);
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Submitting Assessment...';
+            }
+            clearInterval(timer);
+        });
+    })();
 </script>
-
 {% endblock content %}

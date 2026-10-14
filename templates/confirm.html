@@ -1,15 +1,40 @@
 {% extends "index.html" %}
+{% load static %}
+
+{% block title %}Confirm Termination — Dossier Deletion | QuizHub{% endblock title %}
+{% block meta_robots %}noindex, nofollow{% endblock meta_robots %}
+
 {% block content %}
+<section class="section-pad chapter-paper" style="padding-top: 140px; min-height: 80vh; display: flex; align-items: center;">
+    <div class="zh-container zh-container-narrow">
+        <div class="section-number">
+            <span class="sn-num">01</span>
+            <span>Irreversible Action / Dossier Termination</span>
+        </div>
 
-  <h1 class="display-4 text-center my-5">Confirmation </h1>
+        <div class="zh-card-light reveal" style="max-width: 580px; margin: 0 auto; padding: clamp(32px, 5vw, 56px); text-align: center; border-color: var(--clay);">
+            <span class="eyebrow" style="color: var(--clay); border-bottom-color: var(--clay);">Cautionary Prompt</span>
+            
+            <h2 style="font-size: clamp(30px, 3.8vw, 44px); margin-bottom: 20px;">
+                Confirm dossier <em>termination.</em>
+            </h2>
 
-  <div class="container">
-    <form action="" class="" method="POST">
-      {% csrf_token %}
-        <p class="fs-4"><b>@{{user_profile.user.username}}</b>, Are you sure you want to delete your profile!!</p>
-        <a href="{% url "profile" request.user.username %}" class="btn btn-success" type="button">Back to Home</a>
-        <input class="btn btn-danger" type="submit" value="Confirm">
-    </form>
-  </div>
-  {% endblock content %}
+            <p style="font-size: 15.5px; line-height: 1.7; color: rgba(30, 33, 29, 0.85); margin-bottom: 30px;">
+                Scholar <strong>@{{ user_profile.user.username }}</strong>, you are about to permanently delete your registration and recorded evaluation history from the QuizHub index. This operation cannot be reversed.
+            </p>
 
+            <form method="POST" action="">
+                {% csrf_token %}
+                <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+                    <a href="{% url 'profile' request.user.username %}" class="zh-btn zh-btn-outline">
+                        ← Retain Profile & Abort
+                    </a>
+                    <button type="submit" class="zh-btn zh-btn-clay">
+                        Confirm Permanent Deletion
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock content %}

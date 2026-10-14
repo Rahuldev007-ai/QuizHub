@@ -1,143 +1,104 @@
-{% extends "index.html" %}
+{% extends "./index.html" %}
+{% load static %}
+
+{% block title %}Sign In — Scholar Authentication | QuizHub{% endblock title %}
+{% block meta_robots %}noindex, nofollow{% endblock meta_robots %}
+
 {% block content %}
-
-<h1 class="display-4 text-center my-5 text-primary" id="loginHeading">Login</h1>
-
-<div class="container">
-    <div class="row row-cols-sm-1 row-cols-lg-3">
-        <div class="col-12"></div>
-        <div class="col-12">
-            <!-- Display Messages -->
-            {% for message in messages %}
-            <div class="alert alert-danger text-center" role="alert" id="alertMessage">
-                {{ message }}
-            </div>
-            {% endfor %}
-
-            <!-- Login Form -->
-            <form method="POST" action="{% url 'login' %}" id="loginForm">
-                {% csrf_token %}
-                <div class="mb-3">
-
-                    <label for="usernameInput" class="form-label" id="usernameLabel">Username</label>
-                    <input type="text" name="username" class="form-control" id="usernameInput" placeholder="Username" 
-                           value="{{ username|default:'' }}" required>
-                </div>
-                <div class="mb-3">
-                    <label for="passwordInput" class="form-label" id="passwordLabel">Password</label>
-                    <input type="password" name="password" class="form-control" id="passwordInput" placeholder="Password" required>
-                </div>
-                <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" id="rememberMeCheckbox">
-                    <label class="form-check-label" for="rememberMeCheckbox" id="rememberMeLabel">Remember me</label>
-                </div>
-                <button type="submit" class="btn btn-primary px-5" id="loginButton">Login</button>
-            </form>
-
-            <p class="my-4" id="registerLink">Not a member yet? <b><a href="{% url 'register' %}" id="registerAnchor">Register</a></b></p>
+<section class="section-pad chapter-paper" style="padding-top: 140px; min-height: 85vh; display: flex; align-items: center;">
+    <div class="zh-container" style="max-width: 1200px;">
+        <!-- Numbered Label -->
+        <div class="section-number">
+            <span class="sn-num">01</span>
+            <span>Authentication / Access Gateway</span>
         </div>
-        <div class="col-12"></div>
+
+        <div style="display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(320px, 440px); gap: clamp(28px, 5vw, 72px); align-items: center; justify-content: space-between;">
+            <!-- Left Editorial Text -->
+            <div class="reveal">
+                <h1 style="font-size: clamp(38px, 5vw, 72px); line-height: 0.95; word-break: break-word;">
+                    Scholar. <em>Authentication.</em>
+                </h1>
+                <p class="lede" style="margin-top: 22px; max-width: 520px;">
+                    Enter your registered credentials to resume your curriculum, record assessment submissions, and view historical accuracy indices.
+                </p>
+                
+                <div style="margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--line); max-width: 480px;">
+                    <p style="font-size: 13.5px; opacity: 0.7; margin-bottom: 12px;">
+                        Not currently enrolled as a scholar?
+                    </p>
+                    <a href="{% url 'register' %}" class="zh-btn zh-btn-outline zh-btn-sm">
+                        Create Membership <span class="zh-btn-arrow">→</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right Login Form Card (Ink Card) -->
+            <div class="zh-hero-card reveal" style="border-radius: 4px; width: 100%; max-width: 440px; box-sizing: border-box;">
+                <span class="eyebrow light" style="margin-bottom: 14px;">Credentials Required</span>
+                <h3 style="color: #ffffff; margin-bottom: 24px;">Access Portal</h3>
+
+                <form method="POST" action="{% url 'login' %}" id="loginForm" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="zh-field">
+                        <label for="usernameInput" class="zh-label" style="color: rgba(255, 255, 255, 0.75);">Username Identifier</label>
+                        <input type="text" name="username" class="zh-input" id="usernameInput" 
+                               value="{{ username|default:'' }}" placeholder="e.g. turing_alan" required autocomplete="username">
+                    </div>
+
+                    <div class="zh-field">
+                        <label for="passwordInput" class="zh-label" style="color: rgba(255, 255, 255, 0.75);">Secret Passphrase</label>
+                        <input type="password" name="password" class="zh-input" id="passwordInput" 
+                               placeholder="Enter your password" required autocomplete="current-password">
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin: 24px 0;">
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; opacity: 0.75; cursor: pointer; color: #ffffff;">
+                            <input type="checkbox" id="rememberMeCheckbox" style="accent-color: var(--chalk); cursor: pointer;">
+                            Remember session
+                        </label>
+                    </div>
+
+                    <button type="submit" class="zh-btn zh-btn-primary" style="width: 100%; height: 50px;">
+                        Authenticate Session <span class="zh-btn-arrow">→</span>
+                    </button>
+                </form>
+
+                <div style="margin-top: 22px; text-align: center; font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.45;">
+                    Protected by cryptographically hashed session tokens
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+</section>
 
 <script>
     document.getElementById('loginForm').addEventListener('submit', function (event) {
-        const username = document.getElementById('usernameInput').value;
-        const password = document.getElementById('passwordInput').value;
+        const username = document.getElementById('usernameInput').value.trim();
+        const password = document.getElementById('passwordInput').value.trim();
 
-        if (username.trim() === "") {
-            alert("Please enter a username.");
+        if (username === "") {
             event.preventDefault();
+            if (window.showToast) {
+                window.showToast("Please provide your username identifier.", "error");
+            } else {
+                alert("Please provide your username identifier.");
+            }
+            document.getElementById('usernameInput').focus();
             return;
         }
 
-        if (password.trim() === "") {
-            alert("Please enter a password.");
+        if (password === "") {
             event.preventDefault();
+            if (window.showToast) {
+                window.showToast("Please enter your secret passphrase.", "error");
+            } else {
+                alert("Please enter your secret passphrase.");
+            }
+            document.getElementById('passwordInput').focus();
             return;
         }
     });
 </script>
-
-<style>
-    #loginHeading {
-        font-family: 'Arial', sans-serif;
-        color: #334;
-        font-weight: 600;
-    }
-
-    #loginForm {
-        background: linear-gradient(135deg, #4631d3, #dbcb2e);
-        padding: 30px;
-        border-radius: 8px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    }
-
-    .form-control {
-        border-radius: 20px;
-        padding: 15px;
-        font-size: 16px;
-        transition: all 0.3s ease;
-    }
-
-    .form-control:focus {
-        border-color: #4CAF50;
-        box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
-    }
-
-    #loginButton {
-        background-color: #4CAF50;
-        border-radius: 20px;
-        padding: 12px 25px;
-        color: white;
-        font-size: 16px;
-        width: 100%;
-        transition: background-color 0.3s ease;
-    }
-
-    #loginButton:hover {
-        background-color: #45a049;
-    }
-
-    .form-label {
-        font-size: 18px;
-        font-weight: bold;
-        color: white;
-    }
-
-    #rememberMeLabel {
-        font-size: 14px;
-        color: white;
-    }
-
-    #registerLink {
-        font-size: 16px;
-        color: #555;
-    }
-
-    #registerAnchor {
-        color: #4CAF50;
-        text-decoration: none;
-    }
-
-    #registerAnchor:hover {
-        text-decoration: underline;
-    }
-
-    #alertMessage {
-        margin-top: 10px;
-        font-size: 16px;
-    }
-
-    @media (max-width: 768px) {
-        .container {
-            margin-top: 20px;
-        }
-
-        #loginButton {
-            width: 100%;
-        }
-    }
-</style>
-
 {% endblock content %}

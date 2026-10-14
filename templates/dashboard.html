@@ -1,139 +1,106 @@
 {% extends "./index.html" %}
+{% load static %}
+
+{% block title %}Administrative Dashboard — QuizHub{% endblock title %}
+{% block meta_robots %}noindex, nofollow{% endblock meta_robots %}
 
 {% block content %}
+<section class="section-pad chapter-paper" style="padding-top: 130px;">
+    <div class="zh-container">
+        <!-- Numbered Section Label -->
+        <div class="section-number">
+            <span class="sn-num">01</span>
+            <span>Governance & Analytics / Platform Oversight</span>
+        </div>
 
-<h1 class="display-4 text-center my-5">Dashboard</h1>
+        <div style="margin-bottom: 50px;" class="reveal">
+            <h1>Administrative. <em>Oversight.</em></h1>
+            <p class="lede" style="max-width: 600px; margin-top: 20px;">
+                Platform telemetry, active submissions, and incoming technical inquiries from verified scholars.
+            </p>
+        </div>
 
-<div class="container">
-    <div class="row">
-        <!-- Active Users Card -->
-        <div class="col-sm-3 mb-3">
-            <div class="card">
-                <div class="card-body text-center mt-4">
-                    <h1 class="card-title pricing-card-title">{{ top_users|length }}</h1>
-                    <p class="card-text">Active Users</p>
-                    <ul class="list-group mt-5">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Today
-                            <span class="badge bg-primary rounded-pill">{{ top_users|length }}</span>
-                        </li>
-                    </ul>
+        <!-- 4 Key Stat Cards -->
+        <div class="zh-grid-4 reveal" style="margin-bottom: 50px;">
+            <div class="zh-card-light">
+                <span class="zh-stat-label">Active Scholars</span>
+                <span class="zh-stat-num">{{ top_users|length }}</span>
+                <div style="margin-top: 16px; font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.14em;">
+                    Top Tier Ranked
+                </div>
+            </div>
+
+            <div class="zh-card-light">
+                <span class="zh-stat-label">Published Quizzes</span>
+                <span class="zh-stat-num">{{ quizzes|length }}</span>
+                <div style="margin-top: 16px; font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.14em;">
+                    Active Curricula
+                </div>
+            </div>
+
+            <div class="zh-card-light">
+                <span class="zh-stat-label">Total Submissions</span>
+                <span class="zh-stat-num">{{ submissions }}</span>
+                <div style="margin-top: 16px; font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.14em;">
+                    Evaluations Recorded
+                </div>
+            </div>
+
+            <div class="zh-card-light">
+                <span class="zh-stat-label">Problems In Bank</span>
+                <span class="zh-stat-num">{{ questions }}</span>
+                <div style="margin-top: 16px; font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.14em;">
+                    Calibrated Items
                 </div>
             </div>
         </div>
 
-        <!-- Quizzes Card -->
-        <div class="col-sm-3 mb-3">
-            <div class="card">
-                <div class="card-body text-center mt-4">
-                    <h1 class="card-title pricing-card-title">{{ quizzes|length }}</h1>
-                    <p class="card-text">Quizzes</p>
-                    <ul class="list-group mt-5">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Today
-                            <span class="badge bg-primary rounded-pill">{{ quizzes|length }}</span>
-                        </li>
-                    </ul>                    
-                </div>
+        <!-- Inquiries / Messages Table -->
+        <div class="reveal">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+                <h2 style="font-size: clamp(28px, 3.5vw, 44px);">Inbound Communications & <em>Inquiries.</em></h2>
+                <span class="zh-label" style="margin: 0;">{{ mails|length }} Messages Pending</span>
             </div>
-        </div>
 
-        <!-- Submissions Card -->
-        <div class="col-sm-3 mb-3">
-            <div class="card">
-                <div class="card-body text-center mt-4">
-                    <h1 class="card-title pricing-card-title">{{ submissions }}</h1>
-                    <p class="card-text">Submissions</p>
-                    <ul class="list-group mt-5">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Today
-                            <span class="badge bg-primary rounded-pill">{{submissions}}</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Questions Card -->
-        <div class="col-sm-3 mb-3">
-            <div class="card">
-                <div class="card-body text-center mt-4">
-                    <h1 class="card-title pricing-card-title">{{ questions }}</h1>
-                    <p class="card-text">Questions</p>
-                    <ul class="list-group mt-5">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Today
-                            <span class="badge bg-primary rounded-pill">{{questions}}</span>
-                        </li>
-                    </ul>
-                </div>
+            <div class="zh-card-light" style="padding: 0; overflow-x: auto;">
+                <table class="zh-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">Index</th>
+                            <th>Scholar</th>
+                            <th>Transmission Date</th>
+                            <th style="text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mail in mails %}
+                        <tr>
+                            <td class="zh-rank-num">
+                                #{{ forloop.counter|stringformat:"02d" }}
+                            </td>
+                            <td>
+                                <strong>@{{ mail.user.username }}</strong>
+                            </td>
+                            <td style="opacity: 0.75; font-size: 14px;">
+                                {{ mail.created_at|date:"F d, Y" }}
+                            </td>
+                            <td style="text-align: right;">
+                                <a href="{% url 'message_view' mail.user.username %}" class="zh-btn zh-btn-ink zh-btn-sm">
+                                    Review Note <span class="zh-btn-arrow">→</span>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 50px 20px; color: rgba(30, 33, 29, 0.6);">
+                                No inbound messages currently pending review.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-
- 
-    <!-- Mail Section Table -->
-    <div class="row mt-5">
-        <div class="col-sm-12">
-            <h2 class="text-center">Message</h2>
-            <table class="table table-bordered">
-                <thead class="table-dark">
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Username</th>
-                        <th scope="col">Date</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for mail in mails %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ mail.user.username }}</td>
-                        <td>{{ mail.created_at|date:"Y-m-d" }}</td>
-                        <td>
-                            <a href="{% url 'message_view' mail.user.username %}" class="btn btn-primary btn-sm">Open</a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" class="text-center">No mails available</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-       <!-- Leaderboard for Top Users -->
-       <div class="row">
-        <div class="col-sm-12">
-            <h2 class="text-center">Top Users</h2>
-            <table class="table table-bordered">
-                <thead class="table-dark">
-                    <tr>
-                        <th scope="col">Rank</th>
-                        <th scope="col">Username</th>
-                        <th scope="col">Score</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for user_score in top_users %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ user_score.user.username }}</td>
-                        <td>{{ user_score.score }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="3" class="text-center">No users found</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-</div>
-
+</section>
 {% endblock content %}

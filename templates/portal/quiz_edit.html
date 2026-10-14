@@ -1,0 +1,67 @@
+{% extends "../index.html" %}
+{% load static %}
+
+{% block title %}Edit Curriculum: {{ quiz.title }} — QuizHub Studio{% endblock title %}
+{% block meta_robots %}noindex, nofollow{% endblock meta_robots %}
+
+{% block content %}
+<section class="section-pad chapter-paper" style="padding-top: 130px; min-height: 85vh;">
+    <div class="zh-container zh-container-narrow">
+        
+        <div style="margin-bottom: 24px;">
+            <a href="{% url 'portal_dashboard' %}" class="zh-btn zh-btn-outline zh-btn-sm">
+                ← Return to Administrative Studio
+            </a>
+        </div>
+
+        <div class="section-number">
+            <span class="sn-num">01</span>
+            <span>Curriculum Modification / {{ quiz.title }}</span>
+        </div>
+
+        <div style="margin-bottom: 36px;">
+            <h1>Modify. <em>Curriculum.</em></h1>
+            <p class="lede" style="margin-top: 10px;">
+                Update syllabus title, category taxonomy, and architectural description.
+            </p>
+        </div>
+
+        <div class="zh-card-light" style="padding: clamp(24px, 3.5vw, 40px); background: #ffffff;">
+            <form method="POST" action="{% url 'portal_quiz_edit' quiz.id %}">
+                {% csrf_token %}
+
+                <div style="margin-bottom: 22px;">
+                    <label class="zh-label" for="quizTitle">Assessment Title *</label>
+                    <input type="text" name="title" id="quizTitle" class="zh-input" value="{{ quiz.title }}" required style="font-size: 16px;">
+                </div>
+
+                <div style="margin-bottom: 22px;">
+                    <label class="zh-label" for="quizCategory">Category Discipline *</label>
+                    <select name="category" id="quizCategory" class="zh-select" required>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if cat.id == quiz.category.id %}selected{% endif %}>
+                            {{ cat.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 28px;">
+                    <label class="zh-label" for="quizDesc">Curriculum Syllabus Description</label>
+                    <textarea name="description" id="quizDesc" class="zh-textarea" rows="4">{{ quiz.description }}</textarea>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--line); padding-top: 20px; flex-wrap: wrap; gap: 12px;">
+                    <a href="{% url 'portal_dashboard' %}" class="zh-btn zh-btn-outline zh-btn-sm">
+                        Cancel Changes
+                    </a>
+                    <button type="submit" class="zh-btn zh-btn-ink zh-btn-lg">
+                        Save Curriculum Modifications <span class="zh-btn-arrow">→</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</section>
+{% endblock content %}
